@@ -13,23 +13,23 @@ import lejos.hardware.port.Port;
 import lejos.robotics.SampleProvider;
 
 public class TouchSensorTest{
-		public static void main(String[] args){
-			  Brick brick = BrickFinder.getDefault();
-				Port s1 = brick.getPort("S1");
-				EV3TouchSensor sensor = new EV3TouchSensor(s1);
-				SampleProvider provider;
-				float[] sample;
+        public static void main(String[] args){
+              Brick brick = BrickFinder.getDefault();
+                Port s1 = brick.getPort("S1");
+                EV3TouchSensor sensor = new EV3TouchSensor(s1);
+                SampleProvider provider;
+                float[] sample;
 
-				provider = sensor.getTouchMode();
-				sample = new float[provider.sampleSize()];
+                provider = sensor.getTouchMode();
+                sample = new float[provider.sampleSize()];
 
-				while(true){
-						provider.fetchSample(sample, 0);
-						System.out.println(sample[0]);
-						if(Button.ESCAPE.isDown()){
-							sensor.close();
-							System.exit(0);
-						}
-				} 
-		}
+                while(true){
+                        provider.fetchSample(sample, 0);
+                        System.out.println(sample[0]);
+                        if(Button.ESCAPE.isDown()){
+                            sensor.close();
+                            System.exit(0);
+                        }
+                } 
+        }
 }
