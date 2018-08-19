@@ -1,4 +1,5 @@
 /*
+ * Written by Abdul Mohsi Jawaid
  * Testing the Color Sensor
  * Measures red channel from the color sensor
  * Press down key to exit program
@@ -19,11 +20,13 @@ public class ColorSensorTest
         SampleProvider colorProvider;
         float[] colorSample;
         
+        // Color Sensor assumed to be attached on port 1
         Port sensorPort = LocalEV3.get().getPort("S1");
         colorSensor = new EV3ColorSensor(sensorPort);
         colorProvider = colorSensor.getRGBMode();
         colorSample = new float[colorProvider.sampleSize()];
         
+        // Exits test if Down button pressed
         while(Button.DOWN.isUp())
         {
             colorProvider.fetchSample(colorSample, 0);
