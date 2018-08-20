@@ -6,31 +6,50 @@
  */
 
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
 import lejos.hardware.Button;
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.robotics.SampleProvider;
+import lejos.robotics.Color;
+import lejos.remote.ev3.RemoteEV3;
+import lejos.utility.Delay;
 
 public class ColorSensorTest 
 {
-    public static void main(String[] args) 
+    public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException 
     {
+        RemoteEV3 ev3 = new RemoteEV3("192.168.43.132");
         EV3ColorSensor colorSensor;
-        SampleProvider colorProvider;
-        float[] colorSample;
         
         // Color Sensor assumed to be attached on port 1
-        Port sensorPort = LocalEV3.get().getPort("S1");
+
+        Port sensorPort = ev3.getPort("S1");
         colorSensor = new EV3ColorSensor(sensorPort);
-        colorProvider = colorSensor.getRGBMode();
-        colorSample = new float[colorProvider.sampleSize()];
         
         // Exits test if Down button pressed
         while(Button.DOWN.isUp())
         {
-            colorProvider.fetchSample(colorSample, 0);
-            System.out.println("R" + colorSample[0]);
+            int currentDetectColor = colorSensor.getColorID();
+            switch(currentDetectColor){
+                case Color.RED:
+                    System.out.println("RED DETECTED");
+                    break;
+                case Color.BLUE:
+                    System.out.println("BLUE DETECTED");
+                    break;
+                case Color.GREEN:
+                    System.out.println("GREEN DETECTED");
+                    break;
+                default:
+                    System.out.println("NONE DETECTED");
+                    break;
+
+            }
+            Delay.msDelay(100);
         }
         colorSensor.close();   
     }
