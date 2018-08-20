@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="robot">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    <property name="robot_jar" value="robot.jar"/>
+    <path id="boot.classpath" location="/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/jre/lib/rt.jar"/>  
+    <path id="LeJOS EV3 Runtime.libraryclasspath">
+        <pathelement location="lib/pc/ev3tools.jar"/>
+        <pathelement location="lib/pc/3rdparty/jfreechart.jar"/>
+        <pathelement location="lib/pc/3rdparty/jcommon.jar"/>
+        <pathelement location="lib/pc/3rdparty/commons-cli.jar"/>
+        <pathelement location="lib/pc/3rdparty/jsch-0.1.50.jar"/>
+        <pathelement location="lib/ev3/ev3classes.jar"/>
+        <pathelement location="lib/ev3/dbusjava.jar"/>
+        <pathelement location="lib/ev3/3rdparty/opencv-2411.jar"/>
+    </path>
+    <path id="robot.classpath">
+        <path refid="LeJOS EV3 Runtime.libraryclasspath"/>
+        <pathelement location="bin"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="robot/src/main">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="init" name="build-main">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="robot/src/main"/>
+            <classpath refid="robot.classpath"/>
+        </javac>
+    </target>
+    <target name="build-jar" depends="build-main">
+       <jar jarfile="${robot_jar}" basedir="bin"/>
+    </target>
+    <target name="run" depends="build-jar">
+       <java classname="Robot" classpath="${robot_jar}" classpathref="robot.classpath"/>
+    </target>
+</project>
