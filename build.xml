@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build" name="robot">
+<project basedir="." default="build-main" name="robot">
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
-    <property name="robot_jar" value="robot.jar"/>
+    <property name="hardware-tests-jar" value="hardware-tests.jar"/>
+    <property name="main-jar" value="main.jar"/>
     <path id="boot.classpath" location="/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/jre/lib/rt.jar"/>  
     <path id="LeJOS EV3 Runtime.libraryclasspath">
         <pathelement location="lib/pc/ev3tools.jar"/>
@@ -20,7 +21,7 @@
         <path refid="LeJOS EV3 Runtime.libraryclasspath"/>
         <pathelement location="bin"/>
     </path>
-    <target name="init">
+    <target name="init" depends="clean">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="robot/src/main">
@@ -32,6 +33,21 @@
     <target name="clean">
         <delete dir="bin"/>
     </target>
+    <target depends="init" name="build-hardware-tests">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="robot/src/test/hardware"/>
+            <classpath refid="robot.classpath"/>
+        </javac>
+    </target>
+    <target name="build-hardware-tests-jar" depends="build-hardware-tests">
+       <jar jarfile="${hardware-tests-jar}" basedir="bin"/>
+    </target>
+    <target name="run-test" depends="build-hardware-tests-jar">
+       <java classname="UltrasonicSensorTest" classpath="${hardware-tests-jar}" classpathref="robot.classpath"/>
+    </target>
+
+
     <target depends="init" name="build-main">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
@@ -39,10 +55,10 @@
             <classpath refid="robot.classpath"/>
         </javac>
     </target>
-    <target name="build-jar" depends="build-main">
-       <jar jarfile="${robot_jar}" basedir="bin"/>
+    <target name="build-main-jar" depends="build-main">
+       <jar jarfile="${main-jar}" basedir="bin"/>
     </target>
-    <target name="run" depends="build-jar">
-       <java classname="Robot" classpath="${robot_jar}" classpathref="robot.classpath"/>
+    <target name="run-main" depends="build-main-jar">
+       <java classname="Robot" classpath="${main-jar}" classpathref="robot.classpath"/>
     </target>
 </project>
