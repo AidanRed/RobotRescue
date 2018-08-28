@@ -30,10 +30,13 @@
             </fileset>
         </copy>
     </target>
+
     <target name="clean">
         <delete dir="bin"/>
     </target>
-    <target depends="init" name="build-hardware-tests">
+
+
+    <target name="build-hardware-tests" depends="init">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="robot/src/test/hardware"/>
@@ -48,16 +51,42 @@
     </target>
 
 
-    <target depends="init" name="build-main">
+
+    <target name="build-main" depends="init" >
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="robot/src/main"/>
             <classpath refid="robot.classpath"/>
         </javac>
     </target>
-    <target name="build-main-jar" depends="build-main">
+
+    <target name="compile-junit-tests" depends="build-main">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="robot/src/test/junit"/>
+            <classpath refid="robot.classpath"/>
+        </javac>
+    </target>
+
+    <target name="run-junit-tests" depends="compile-junit-tests">
+        <junit>
+            <classpath>
+                <pathelement location="bin" />    
+                <pathelement location="lib/junit-4.10.jar"/>
+            </classpath>    
+            <batchtest>
+               <fileset dir="$robot/src/test/junit">
+                    <include name="**/*Test*" />
+               </fileset>
+            </batchtest>
+            <formatter type="brief" usefile="false"/>
+        </junit>
+    </target>  
+
+    <target name="build-main-jar" depends="run-junit-tests">
        <jar jarfile="${main-jar}" basedir="bin"/>
     </target>
+
     <target name="run-main" depends="build-main-jar">
        <java classname="Robot" classpath="${main-jar}" classpathref="robot.classpath"/>
     </target>
