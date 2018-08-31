@@ -61,7 +61,7 @@
         </javac>
     </target>
 
-    <target name="compile-junit-tests" depends="build-robot-main">
+    <target name="compile-robot-junit-tests" depends="build-robot-main">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="robot/src/test/junit"/>
@@ -69,7 +69,7 @@
         </javac>
     </target>
 
-    <target name="run-junit-tests" depends="compile-junit-tests">
+    <target name="run-robot-junit-tests" depends="compile-robot-junit-tests">
         <junit>
             <classpath>
                 <pathelement location="bin" />    
@@ -84,7 +84,7 @@
         </junit>
     </target>  
 
-    <target name="build-robot-main-jar" depends="run-junit-tests">
+    <target name="build-robot-main-jar" depends="run-robot-junit-tests">
        <jar jarfile="${robot-main-jar}" basedir="bin"/>
     </target>
 
