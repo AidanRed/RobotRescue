@@ -2,7 +2,8 @@ import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.ev3.Port;
+import lejos.hardware.port.Port;
+import lejos.hardware.device.DeviceIdentifier;
 // class for creating and storing a unique digital fingerprint 
 // to identify the robot
 public class Fingerprint {
@@ -25,6 +26,7 @@ public class Fingerprint {
             Port p = LocalEV3.get().getPort(portNames[i]);
             DeviceIdentifier devId = new DeviceIdentifier(p);
             toHash += devId.getDeviceSignature(true);
+            devId.close();
         }
         
         // add more EV3 info here
