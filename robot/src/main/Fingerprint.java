@@ -15,7 +15,7 @@ public class Fingerprint {
 
     private String findData(){
         //getting robot info
-        String toHash = "teststring";
+        String toHash = getDeviceSignature(true);
         return toHash;
     }
 
