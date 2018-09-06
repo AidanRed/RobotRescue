@@ -76,7 +76,7 @@
                 <pathelement location="lib/junit-4.12.jar"/>
             </classpath>    
             <batchtest>
-               <fileset dir="$robot/src/test/junit">
+               <fileset dir="robot/src/test/junit">
                     <include name="**/*Test*" />
                </fileset>
             </batchtest>
@@ -117,7 +117,7 @@
                 <pathelement location="lib/junit-4.12.jar"/>
             </classpath>    
             <batchtest>
-               <fileset dir="$controller/src/test/junit">
+               <fileset dir="controller/src/test/junit">
                     <include name="**/*Test*" />
                </fileset>
             </batchtest>
