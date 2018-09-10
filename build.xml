@@ -7,6 +7,7 @@
     <property name="hardware-tests-jar" value="hardware-tests.jar"/>
     <property name="robot-main-jar" value="robot-main.jar"/>
     <property name="controller-main-jar" value="controller-main.jar"/>
+    <property name="project-main-jar" value="project-main.jar"/>
     <path id="boot.classpath" location="/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/jre/lib/rt.jar"/>  
     <path id="LeJOS EV3 Runtime.libraryclasspath">
         <pathelement location="lib/pc/ev3tools.jar"/>
@@ -84,7 +85,7 @@
         </junit>
     </target>  
 
-    <target name="build-robot-main-jar" depends="build-robot-main">
+    <target name="build-robot-main-jar" depends="run-robot-junit-tests">
        <jar jarfile="${robot-main-jar}" basedir="bin"/>
     </target>
 
@@ -92,7 +93,7 @@
        <java classname="Robot" classpath="${robot-main-jar}" classpathref="robot.classpath"/>
     </target>
 
-    <target name="build-controller-main" depends="init" >
+    <target name="build-controller-main" depends="build-robot-main">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="controller/src/main"/>
@@ -129,5 +130,13 @@
 
     <target name="run-controller-main" depends="build-controller-main-jar">
        <java classname="Controller" classpath="${controller-main-jar}" classpathref="robot.classpath"/>
+    </target>
+
+    <target name="build-project" depends="run-controller-junit-tests">
+        <jar jarfile="${project-main-jar}" basedir="bin"/>
+    </target>
+
+    <target name="run-project" depends="build-project">
+        <java classname="Controller" classpath="${project-main-jar}" classpathref="robot.classpath"/>
     </target>
 </project>
