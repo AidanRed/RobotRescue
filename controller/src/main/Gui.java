@@ -179,6 +179,7 @@ public class Gui extends JFrame {
                             controller.disconnect();
                             setVisible(false);
                             dispose();
+                            System.exit(0);
                         }
                         break;
                     case KeyEvent.VK_UP:
@@ -238,6 +239,7 @@ public class Gui extends JFrame {
                         controller.disconnect();
                         setVisible(false);
                         dispose();
+                        System.exit(0);
                     }
                 }
                 if(e.getSource() == bUp)

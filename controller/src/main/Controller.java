@@ -21,18 +21,24 @@ public class Controller
 
     RemoteEV3 ev3;
     Motor motor;
+    ColorSensor colorsensor;
     Gui gui;
+    boolean connected = false;
 
     public void init(Gui gui)
     {
         this.gui = gui;
         motor = new Motor();
+        colorsensor = new ColorSensor();
+
     }
 
     public void connect() throws RemoteException, MalformedURLException, NotBoundException
     {
         ev3 = new RemoteEV3("192.168.43.132");
         motor.connect(ev3);
+        colorsensor.connect(ev3);
+        connected = true;
     }
 
     public void action(String a)
@@ -63,8 +69,17 @@ public class Controller
         }
     }
 
+    public void printColorInformation()
+    {
+        if(connected == true)
+        {
+            colorsensor.detectColor();
+        }
+    }
+
     public void disconnect()
     {
-        motor.disconnect();  
+        motor.disconnect();
+        colorsensor.disconnect(); 
     }
 }
