@@ -27,27 +27,28 @@ public class ColorSensor
         colorSensor = new EV3ColorSensor(ev3.getPort("S1"));
     }
 
-    public void detectColor()
+    public String detectColor()
     {
         int currentDetectColor = colorSensor.getColorID();
+        String color = "";
         switch(currentDetectColor){
             case Color.RED:
-                System.out.println("RED DETECTED");
+                color = "RED DETECTED";
                 break;
             case Color.BLUE:
-                System.out.println("BLUE DETECTED");
+                color = "BLUE DETECTED";
                 break;
             case Color.GREEN:
-                System.out.println("GREEN DETECTED");
+                color = "GREEN DETECTED";
                 break;
             case Color.BLACK:
-                System.out.println("BORDER DETECTED");
+                color = "BORDER DETECTED";
                 break;
             default:
-                System.out.println("NONE DETECTED");
+                color = "NONE DETECTED";
                 break;
-
         }
+        return color;
     }
 
     public void disconnect()

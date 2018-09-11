@@ -39,6 +39,7 @@ public class Gui extends JFrame {
     JButton bRight;
     JButton bUp;
     JButton bDown;
+    JTextArea logArea;
 
     boolean connected = false;
 
@@ -130,7 +131,7 @@ public class Gui extends JFrame {
         cons.gridy = 3;
         thePanel.add(bDown,cons);
 
-        JTextArea logArea = new JTextArea("log");
+        logArea = new JTextArea("log");
         cons.ipadx = this.getWidth();
         cons.ipady = this.getHeight()/5*2;
         cons.gridx = 0;
@@ -156,6 +157,11 @@ public class Gui extends JFrame {
         bRight.addMouseListener(new BtnListener());
         bRight.addKeyListener(new KListener());
         
+    }
+
+    public void setLogText(String s)
+    {
+        logArea.setText(s);
     }
 
     private class KListener implements KeyListener
@@ -184,15 +190,19 @@ public class Gui extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         controller.action("move_forward");
+                        controller.printColorInformation();
                         break;
                     case KeyEvent.VK_DOWN:
                         controller.action("move_backward");
+                        controller.printColorInformation();
                         break;
                     case KeyEvent.VK_LEFT:
                         controller.action("turn_left");
+                        controller.printColorInformation();
                         break;
                     case KeyEvent.VK_RIGHT:
                         controller.action("turn_right");
+                        controller.printColorInformation();
                         break;
                     default:
                         System.out.println("Invalid Key Pressed");
@@ -245,18 +255,22 @@ public class Gui extends JFrame {
                 if(e.getSource() == bUp)
                 {
                     controller.action("move_forward");
+                    controller.printColorInformation();
                 }
                 if(e.getSource() == bDown)
                 {
                     controller.action("move_backward");
+                    controller.printColorInformation();
                 }
                 if(e.getSource() == bLeft)
                 {
                     controller.action("turn_left");
+                    controller.printColorInformation();
                 }
                 if(e.getSource() == bRight)
                 {
                     controller.action("turn_right");
+                    controller.printColorInformation();
                 }
             }
             catch (Exception ex)

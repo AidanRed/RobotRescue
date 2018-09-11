@@ -25,10 +25,5 @@ public class Main
         //Initalise the components
         gui.init();
 
-        while(true)
-        {
-            controller.printColorInformation();
-        }
-
     }
 }

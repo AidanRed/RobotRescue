@@ -61,7 +61,7 @@ public class Controller
                 motor.turnRight();
                 break;
             case "stop":
-                System.out.println("Stopped");
+                //System.out.println("Stopped");
                 motor.stop();
                 break;
             default:
@@ -71,10 +71,9 @@ public class Controller
 
     public void printColorInformation()
     {
-        System.out.println("Color:");
         if(connected == true)
         {
-            colorsensor.detectColor();
+            gui.setLogText(colorsensor.detectColor());
         }
     }
 
