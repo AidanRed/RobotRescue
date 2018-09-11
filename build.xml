@@ -137,6 +137,6 @@
     </target>
 
     <target name="run-project" depends="build-project">
-        <java classname="Controller" classpath="${project-main-jar}" classpathref="robot.classpath"/>
+        <java classname="Main" classpath="${project-main-jar}" classpathref="robot.classpath"/>
     </target>
 </project>
