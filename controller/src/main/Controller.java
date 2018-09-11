@@ -71,6 +71,7 @@ public class Controller
 
     public void printColorInformation()
     {
+        System.out.println("Color:");
         if(connected == true)
         {
             colorsensor.detectColor();
