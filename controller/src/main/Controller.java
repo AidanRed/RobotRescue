@@ -22,14 +22,18 @@ public class Controller
     RemoteEV3 ev3;
     Motor motor;
     ColorSensor colorsensor;
+    GyroSensor gyrosensor;
     Gui gui;
     boolean connected = false;
+
+    int angle = 0;
 
     public void init(Gui gui)
     {
         this.gui = gui;
         motor = new Motor();
         colorsensor = new ColorSensor();
+        gyrosensor = new GyroSensor();
 
     }
 
@@ -38,6 +42,7 @@ public class Controller
         ev3 = new RemoteEV3("192.168.43.132");
         motor.connect(ev3);
         colorsensor.connect(ev3);
+        gyrosensor.connect(ev3);
         connected = true;
     }
 
@@ -53,10 +58,12 @@ public class Controller
                 motor.moveBackward();
                 break;
             case "turn_left":
+                angle = (angle - 1) % 360;
                 System.out.println("Turned Left");
                 motor.turnLeft();
                 break;
             case "turn_right":
+                angle = (angle + 1) % 360;
                 System.out.println("Turned Right");
                 motor.turnRight();
                 break;
@@ -69,17 +76,18 @@ public class Controller
         }
     }
 
-    public void printColorInformation()
+    public void printSensorInformation()
     {
         if(connected == true)
         {
-            gui.setLogText(colorsensor.detectColor());
+            gui.setLogText("COLOR: "+colorsensor.detectColor()+" Angle: "+angle);
         }
     }
 
     public void disconnect()
     {
         motor.disconnect();
-        colorsensor.disconnect(); 
+        colorsensor.disconnect();
+        gyrosensor.disconnect(); 
     }
 }

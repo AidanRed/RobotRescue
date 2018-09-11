@@ -190,19 +190,19 @@ public class Gui extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         controller.action("move_forward");
-                        controller.printColorInformation();
+                        controller.printSensorInformation();
                         break;
                     case KeyEvent.VK_DOWN:
                         controller.action("move_backward");
-                        controller.printColorInformation();
+                        controller.printSensorInformation();
                         break;
                     case KeyEvent.VK_LEFT:
                         controller.action("turn_left");
-                        controller.printColorInformation();
+                        controller.printSensorInformation();
                         break;
                     case KeyEvent.VK_RIGHT:
                         controller.action("turn_right");
-                        controller.printColorInformation();
+                        controller.printSensorInformation();
                         break;
                     default:
                         System.out.println("Invalid Key Pressed");
@@ -255,22 +255,22 @@ public class Gui extends JFrame {
                 if(e.getSource() == bUp)
                 {
                     controller.action("move_forward");
-                    controller.printColorInformation();
+                    controller.printSensorInformation();
                 }
                 if(e.getSource() == bDown)
                 {
                     controller.action("move_backward");
-                    controller.printColorInformation();
+                    controller.printSensorInformation();
                 }
                 if(e.getSource() == bLeft)
                 {
                     controller.action("turn_left");
-                    controller.printColorInformation();
+                    controller.printSensorInformation();
                 }
                 if(e.getSource() == bRight)
                 {
                     controller.action("turn_right");
-                    controller.printColorInformation();
+                    controller.printSensorInformation();
                 }
             }
             catch (Exception ex)
