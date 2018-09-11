@@ -1,9 +1,7 @@
 /*
- * Written by Abdul Mohsi Jawaid
- * Testing the Color Sensor
- * Measures red channel from the color sensor
- * Press down key to exit program
- */
+* Author: Abdul Mohsi Jawaid
+* Communicates between the GUI and the hardware 
+*/
 
 
 import java.net.MalformedURLException;

@@ -1,3 +1,8 @@
+/*
+* Author: Abdul Mohsi Jawaid, Trek Hopton
+* Provides the GUI and action listeners
+*/
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;

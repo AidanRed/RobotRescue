@@ -1,11 +1,7 @@
 /*
- * Written by Roland Croft
- * Program to Test Motors
- * Drive forward for two seconds
- * Makes a right turn
- * Makes a left turn
- * Uses two motors
- * Waits for button press in between each test
+* Author: Abdul Mohsi Jawaid
+* Inspired by Roland Croft's MotorTest
+* Provides an interface to the hardware motors
 */
 
 import java.net.MalformedURLException;
