@@ -19,11 +19,8 @@ public class Main
         Gui gui = new Gui();
 
         //Connect the components together
-        gui.connect(controller);
+        gui.init(controller);
         controller.init(gui);
-
-        //Initalise the components
-        gui.init();
 
     }
 }

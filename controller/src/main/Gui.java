@@ -1,306 +1,258 @@
-/*
-* Author: Abdul Mohsi Jawaid, Trek Hopton
-* Provides the GUI and action listeners
+/*  
+GUI for controller running on the computer.
+Handles all user input to the system. Key Presses, Button Presses etc.
 */
-
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JToolBar;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.JTextArea;;
-
-import java.net.MalformedURLException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.ButtonModel;
 
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.GradientPaint;
+import java.awt.Color;
+import java.awt.AlphaComposite;
+import java.awt.Shape;
+import java.awt.RenderingHints;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Arc2D;
+import java.awt.geom.QuadCurve2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.RoundRectangle2D;
 
-public class Gui extends JFrame {
+/* 
+Creates and contains all the viewable and interactable elements of the controller.
+*/
+public class Gui extends JFrame{
 
     Controller controller;
 
-    JPanel thePanel;
-    JLabel mapArea;
+    JPanel panel;
+    JToolBar toolBar;
+
     JButton bConnect;
-    JButton bDeactivate;
+    JButton bDisconnect;
     JButton bAuto;
     JButton bManual;
+
     JButton bLeft;
     JButton bRight;
     JButton bUp;
     JButton bDown;
+
+    Map mapArea;
     JTextArea logArea;
-
-    boolean connected = false;
-
-    public void connect(Controller controller){
-        this.controller = controller;
-    }
+    JScrollPane scrollPane;
     
-    public void init() {
+    //initializes GUI and its elements
+    public Gui(){
         this.setSize(1000,500);
-        // this.pack();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setTitle("Robot Controller");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.addKeyListener(new KListener());
 
-        JPanel thePanel = new JPanel();
-        thePanel.addKeyListener(new KListener());
-        thePanel.setLayout(new GridBagLayout());
-        GridBagConstraints cons = new GridBagConstraints();
-        
-        mapArea = new JLabel("map");
-        cons.weightx = 0.5;
-        cons.weighty = 0.5;
-        cons.gridx = 0;
-        cons.gridy = 0;
-        cons.gridheight = 3;
-        cons.ipadx = this.getWidth()/2;
-        cons.ipady = this.getHeight()/5*3;
-        thePanel.add(mapArea,cons);
+        panel = new JPanel(new BorderLayout());
 
-        cons.gridheight = 1;
+        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new KEDispatcher());
 
-        cons.ipadx = this.getWidth()/4;
-        cons.ipady = this.getHeight()/5;
+        toolBar = new JToolBar("Controls");
+        toolBar.setFloatable(false);
 
-        // connect button
         bConnect = new JButton("Connect");
-        cons.gridx = 2;
-        cons.gridy = 0;
-        thePanel.add(bConnect,cons);
+        bConnect.getModel().addChangeListener(new BtnModelListener());
+        toolBar.add(bConnect);
+        bDisconnect = new JButton("Disconnect");
+        bDisconnect.getModel().addChangeListener(new BtnModelListener());
+        toolBar.add(bDisconnect);
 
-
-        // deactivate button
-        bDeactivate = new JButton("Shutdown");
-        cons.gridx = 3;
-        cons.gridy = 0;
-        thePanel.add(bDeactivate,cons);
-
-        // Auto mode button
         bAuto = new JButton("Auto");
-        cons.gridx = 2;
-        cons.gridy = 1;
-        thePanel.add(bAuto,cons);
-
-        // Manual mode button
+        bAuto.getModel().addChangeListener(new BtnModelListener());
+        toolBar.add(bAuto);
         bManual = new JButton("Manual");
-        cons.gridx = 3;
-        cons.gridy = 1;
-        thePanel.add(bManual,cons);
+        bManual.getModel().addChangeListener(new BtnModelListener());
+        toolBar.add(bManual);
 
-        // left turn button
         bLeft = new JButton("Left");
-        cons.gridx = 0;
-        cons.gridy = 2;
-        cons.ipadx = 0;
-        cons.ipady = 0;
-        thePanel.add(bLeft,cons);
-
-        // right turn button
+        bLeft.getModel().addChangeListener(new BtnModelListener());
+        toolBar.add(bLeft);
         bRight = new JButton("Right");
-        cons.gridx = 3;
-        cons.gridy = 2;
-        cons.ipadx = 0;
-        cons.ipady = 0;
-        thePanel.add(bRight,cons);
-
-        // forward button
+        bRight.getModel().addChangeListener(new BtnModelListener());
+        toolBar.add(bRight);
         bUp = new JButton("Up");
-        cons.gridx = 0;
-        cons.gridy = 1;
-        cons.ipadx = 0;
-        cons.ipady = 0;
-        thePanel.add(bUp,cons);
-
-        // backward button
+        bUp.getModel().addChangeListener(new BtnModelListener());
+        toolBar.add(bUp);
         bDown = new JButton("Down");
-        cons.gridx = 3;
-        cons.gridy = 3;
-        thePanel.add(bDown,cons);
+        bDown.getModel().addChangeListener(new BtnModelListener());
+        toolBar.add(bDown);
 
-        logArea = new JTextArea("log");
-        cons.ipadx = this.getWidth();
-        cons.ipady = this.getHeight()/5*2;
-        cons.gridx = 0;
-        cons.gridy = 3;
-        cons.gridheight = 2;
-        cons.gridwidth = 4;
-        thePanel.add(logArea,cons);
+        mapArea = new Map();
+        panel.add(mapArea, BorderLayout.CENTER);
+
+        logArea = new JTextArea();
+        scrollPane = new JScrollPane(logArea);
+        scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width, 50));
+        panel.add(scrollPane, BorderLayout.SOUTH);
         
-        this.add(thePanel);
-        
+        panel.add(toolBar, BorderLayout.NORTH);
+
+        this.add(panel);
         this.setVisible(true);
-
-        bConnect.addMouseListener(new BtnListener());
-        bConnect.addKeyListener(new KListener());
-        bDeactivate.addMouseListener(new BtnListener());
-        bDeactivate.addKeyListener(new KListener());
-        bUp.addMouseListener(new BtnListener());
-        bUp.addKeyListener(new KListener());
-        bDown.addMouseListener(new BtnListener());
-        bDown.addKeyListener(new KListener());
-        bLeft.addMouseListener(new BtnListener());
-        bLeft.addKeyListener(new KListener());
-        bRight.addMouseListener(new BtnListener());
-        bRight.addKeyListener(new KListener());
         
     }
-
-    public void setLogText(String s)
-    {
-        logArea.setText(s);
+    //connect gui to controller
+    public void init(Controller c){
+        controller = c;
     }
+    // adds given text to end of current text in log area
+    public void log(String text){
+        logArea.append(text + "\n");
+    }
+    //replaces current text with given text
+    public void setText(String text){
+        logArea.setText(text + "\n");
+    }
+    public void setMapAngle(int a){
+        mapArea.setAngle(a);
+    }
+    // canvas for the map area
+    private class Map extends JComponent{
+        private int angle = 0;
+        public void setAngle(int a){
+            angle = a;
+            repaint();
+        }
+        //renders visual map components
+        public void paint(Graphics g){
+            
+            Graphics2D graph2 = (Graphics2D)g;
 
-    private class KListener implements KeyListener
-    {
-        public void keyPressed(KeyEvent e)
-        {
-            System.out.println("key pressed");
-            try
-            {
-                switch(e.getKeyCode())
-                {
-                    case KeyEvent.VK_C:
-                        if(connected == false){
-                            connected = true;
+            graph2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            Shape drawArc = new Arc2D.Double(this.getSize().width/2, this.getSize().height/2, 100, 100, angle-20, 40, Arc2D.PIE);
+            graph2.draw(drawArc);
+        }
+    }
+    // determines what to do when buttons are pressed or released
+    private class BtnModelListener implements ChangeListener {
+        private boolean prevPressed = false;
+
+        public void stateChanged(ChangeEvent e) {
+            ButtonModel model = (ButtonModel) e.getSource();
+
+            //if the button has changed states
+            if (model.isPressed() != prevPressed) {
+                // if the button has changed to pressed, else not pressed
+                if(model.isPressed()){
+                    try{
+                        if(model == bConnect.getModel()){
                             controller.connect();
-                        }
-                        break;
-                    case KeyEvent.VK_D:
-                        if(connected == true){
-                            connected = false;
+
+                        }if(model == bDisconnect.getModel()){
                             controller.disconnect();
                             setVisible(false);
                             dispose();
                             System.exit(0);
+
+                        }if(model == bUp.getModel()){
+                            controller.action("move_forward");
+
+                        }if(model == bDown.getModel()){
+                            controller.action("move_backward");
+
+                        }if(model == bLeft.getModel()){
+                            controller.action("turn_left");
+
+                        }if(model == bRight.getModel()){
+                            controller.action("turn_right");
+
+                        }if(model == bAuto.getModel()){
+                            // log("Auto Mode");
+
+                        }if(model == bManual.getModel()){
+                            // log("Manual Mode");
                         }
-                        break;
-                    case KeyEvent.VK_UP:
-                        controller.action("move_forward");
-                        controller.printSensorInformation();
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        controller.action("move_backward");
-                        controller.printSensorInformation();
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        controller.action("turn_left");
-                        controller.printSensorInformation();
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        controller.action("turn_right");
-                        controller.printSensorInformation();
-                        break;
-                    default:
-                        System.out.println("Invalid Key Pressed");
-                }
-            }
-            catch (Exception ex)
-            {
-                System.out.println("connection error");
-            }
-
-        }
-
-        public void keyReleased(KeyEvent e)
-        {
-            System.out.println("Key released");
-            if(!(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_C))
-            {
-                controller.action("stop");
-            } 
-        }
-
-        public void keyTyped(KeyEvent e)
-        {
-            System.out.println("Key tyrped");
-        }
-    }
-
-    private class BtnListener implements MouseListener
-    {
-        public void mousePressed(MouseEvent e)
-        {
-            try{
-                if(e.getSource() == bConnect)
-                {
-                    if(connected == false){
-                        connected = true;
-                        controller.connect();
+                    } catch (Exception ex){
+                        System.out.println(ex);
+                    }
+                } else {
+                    if(model == bUp.getModel() || model == bDown.getModel() || 
+                                    model == bLeft.getModel() || model == bRight.getModel()){
+                        controller.action("stop");
                     }
                 }
-                if(e.getSource() == bDeactivate)
-                {
-                    if(connected == true){
-                        connected = false;
-                        controller.disconnect();
-                        setVisible(false);
-                        dispose();
-                        System.exit(0);
+                prevPressed = model.isPressed();
+            }
+        }
+    }
+    // Listens for key presses no matter what component is in focus
+    private class KEDispatcher implements KeyEventDispatcher {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent e) {
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                try{
+                    switch(e.getKeyCode()){
+                        case KeyEvent.VK_C:
+                            controller.connect();
+                            break;
+                        case KeyEvent.VK_D:
+                            controller.disconnect();
+                            setVisible(false);
+                            dispose();
+                            System.exit(0);
+                            break;
+                        case KeyEvent.VK_UP:
+                            controller.action("move_forward");
+                            break;
+                        case KeyEvent.VK_DOWN:
+                            controller.action("move_backward");
+                            break;
+                        case KeyEvent.VK_LEFT:
+                            controller.action("turn_left");
+                            break;
+                        case KeyEvent.VK_RIGHT:
+                            controller.action("turn_right");
+                            break;
+                        default:
+                            System.out.println("Invalid Key Pressed");
                     }
                 }
-                if(e.getSource() == bUp)
-                {
-                    controller.action("move_forward");
-                    controller.printSensorInformation();
+                catch (Exception ex){
+                    System.out.println("key error");
                 }
-                if(e.getSource() == bDown)
-                {
-                    controller.action("move_backward");
-                    controller.printSensorInformation();
-                }
-                if(e.getSource() == bLeft)
-                {
-                    controller.action("turn_left");
-                    controller.printSensorInformation();
-                }
-                if(e.getSource() == bRight)
-                {
-                    controller.action("turn_right");
-                    controller.printSensorInformation();
-                }
+            } else if (e.getID() == KeyEvent.KEY_RELEASED) {
+                if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN ||
+                                e.getKeyCode() == KeyEvent.VK_LEFT || 
+                                e.getKeyCode() == KeyEvent.VK_RIGHT ){
+                    controller.action("stop");
+                } 
+            } else if (e.getID() == KeyEvent.KEY_TYPED) {
+                
             }
-            catch (Exception ex)
-            {
-                System.out.println("connection error");
-            }
-            
-
+            return false;
         }
-        public void mouseReleased(MouseEvent e)
-        {
-            if(!(e.getSource()==bConnect || e.getSource()==bDeactivate))
-            {
-                controller.action("stop");
-            }
-            
-        }
-
-        public void mouseClicked(MouseEvent e)
-        {
-
-        }  
-        public void mouseExited(MouseEvent e)
-        {
-
-        }
-        public void mouseEntered(MouseEvent e)
-        {
-
-        }  
     }
-
 }
