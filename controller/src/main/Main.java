@@ -1,6 +1,5 @@
 /*
-* Author: Abdul Mohsi Jawaid
-* THe main program that connects everything together
+* The main program that connects everything together
 */
 
 import java.lang.reflect.Constructor;
