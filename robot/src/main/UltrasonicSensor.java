@@ -10,7 +10,7 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.port.SensorPort;
-import lejos.hardware.motor.RegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 
 import lejos.remote.ev3.RMISampleProvider;
 
@@ -19,15 +19,23 @@ public class UltrasonicSensor implements Runnable
     RemoteEV3 ev3;
     RMISampleProvider sp;
     float [] sample;
-    RegulatedMotor motor;
+    EV3MediumRegulatedMotor motor;
+    boolean running = true;
+    Thread thread = null;
 
     public void connect(RemoteEV3 ev3) throws RemoteException
     {
-
         this.ev3 = ev3;
         sp = ev3.createSampleProvider("S3", "lejos.hardware.sensor.EV3UltrasonicSensor", "Distance");
         float[] sample = sp.fetchSample();
-        motor = new RegulatedMotor(ev3.getPort("C"));
+        motor = new EV3MediumRegulatedMotor(ev3.getPort("C"));
+        running = true;
+        if(thread == null)
+        {
+            thread = new Thread(this, "ultrasonicthread");
+            thread.start();
+            System.out.println("thread started");
+        }
     }
 
     public void run()
@@ -37,30 +45,23 @@ public class UltrasonicSensor implements Runnable
         String toPrint = new String();
         while(running)
         {
-            try
+            while(currAngle<=45)
             {
-                while(currAngle<=45)
-                {
-                    dist = getDistance();
-                    toPrint = "Angle is: "+currAngle+" distance is: "+dist;
-                    System.out.println(toPrint);
-                    currAngle += 5;
-                    motor.rotate(5);        
-                }
+                dist = getDistance();
+                toPrint = "Angle is: "+currAngle+" distance is: "+dist;
+                System.out.println(toPrint);
+                currAngle += 5;
+                motor.rotate(5);        
+            }
+            currAngle -= 5;
+            motor.rotate(-5);
+            while(currAngle>=-45)
+            {
+                dist = getDistance();
+                toPrint = "Angle is: "+currAngle+" distance is: "+dist;
+                System.out.println(toPrint);
                 currAngle -= 5;
                 motor.rotate(-5);
-                while(currAngle>=-45)
-                {
-                    int dist = getDistance();
-                    String toPrint = "Angle is: "+currAngle+" distance is: "+dist;
-                    System.out.println(toPrint);
-                    currAngle -= 5;
-                    motor.rotate(-5);
-                }
-            }
-            catch(InterruptedException e)
-            {
-                running = false; 
             }
             
         }
@@ -81,14 +82,22 @@ public class UltrasonicSensor implements Runnable
         
     }
 
-    public 
-
     public void disconnect()
     {
-        //gyroSensor.close();
-        try{
+        running = false;
+        try
+        {
+            thread.join(); 
+        }
+        catch(InterruptedException e)
+        {
+
+        }
+        try
+        {
             sp.close();
             motor.close();
+            thread = null;
         }
         catch(RemoteException e){
 

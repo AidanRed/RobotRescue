@@ -23,6 +23,7 @@ public class Controller
     Motor motor;
     ColorSensor colorsensor;
     GyroSensor gyrosensor;
+    UltrasonicSensor ultrasonicsensor;
     Gui gui;
     boolean connected = false;
 
@@ -34,6 +35,7 @@ public class Controller
         motor = new Motor();
         colorsensor = new ColorSensor();
         gyrosensor = new GyroSensor();
+        ultrasonicsensor = new UltrasonicSensor();
 
     }
 
@@ -43,6 +45,7 @@ public class Controller
         motor.connect(ev3);
         colorsensor.connect(ev3);
         gyrosensor.connect(ev3);
+        //ultrasonicsensor.connect(ev3);
         gui.log("Connected");
         connected = true;
     }
@@ -96,6 +99,7 @@ public class Controller
     {
         motor.disconnect();
         colorsensor.disconnect();
-        gyrosensor.disconnect(); 
+        gyrosensor.disconnect();
+        ultrasonicsensor.disconnect();
     }
 }
