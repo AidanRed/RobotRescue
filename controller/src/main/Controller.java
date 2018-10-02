@@ -39,7 +39,7 @@ public class Controller
 
     public void connect() throws RemoteException, MalformedURLException, NotBoundException
     {
-        ev3 = new RemoteEV3("172.20.10.9");
+        ev3 = new RemoteEV3("192.168.43.132");
         motor.connect(ev3);
         colorsensor.connect(ev3);
         gyrosensor.connect(ev3);
