@@ -4,6 +4,8 @@ import java.util.Arrays;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.device.DeviceIdentifier;
+import java.util.Scanner;
+
 // class for creating and storing a unique digital fingerprint 
 // to identify the robot
 public class Fingerprint {
@@ -49,6 +51,23 @@ public class Fingerprint {
     //this is just for testing and will be removed
     public static void main(String[] args){
         Fingerprint myFp = new Fingerprint();
-        System.out.println(Arrays.toString(myFp.getFingerprint()));
+        byte[] first = myFp.getFingerprint();
+
+        // Wait for an input
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Press 'Enter' to re-generate fingerprint.");
+        reader.nextLine();
+        reader.close();
+        
+        // Output results
+        byte[] second = myFp.getFingerprint();
+        System.out.println("First = " + Arrays.toString(first));
+        System.out.println("Second = " + Arrays.toString(second));
+        // Compare fingerprints
+        if(first != second) {
+            System.out.println("Fingerprint has changed!");
+        } else {
+            System.out.println("Fingerprint is the same!");
+        }
     }
 }
