@@ -7,6 +7,7 @@ import lejos.hardware.BrickInfo;
 import lejos.hardware.lcd.LCD;
 import lejos.hardware.sensor.UARTSensor;
 import lejos.remote.ev3.RMIRegulatedMotor;
+import lejos.remote.ev3.RMISampleProvider;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
@@ -34,7 +35,7 @@ class RobotUtility{
     public static final String PANNING_PORT = "C";
 
     // Lists of the sensors and ports currently open
-    public static List<UARTSensor> openSensors = new ArrayList<>();
+    public static List<RMISampleProvider> openSensors = new ArrayList<>();
     public static List<RMIRegulatedMotor> openMotors = new ArrayList<>();
     
     // Returns the first brick discovered in the network. If none found, returns null.
@@ -94,22 +95,22 @@ class RobotUtility{
         return null;
     }
 
-    public static EV3UltrasonicSensor getUltrasonicSensor(RemoteEV3 ev3){
-        EV3UltrasonicSensor sensor = new EV3UltrasonicSensor(ev3.getPort(ULTRASONIC_PORT));
+    public static RMISampleProvider getUltrasonicSensor(RemoteEV3 ev3){
+        RMISampleProvider sensor = ev3.createSampleProvider(ULTRASONIC_PORT, "lejos.hardware.sensor.EV3UltrasonicSensor", "Distance");
         openSensors.add(sensor);
 
         return sensor;
     }
 
-    public static EV3ColorSensor getColorSensor(RemoteEV3 ev3){
-        EV3ColorSensor sensor = new EV3ColorSensor(ev3.getPort(COLOUR_PORT));
+    public static RMISampleProvider getColorSensor(RemoteEV3 ev3){
+        RMISampleProvider sensor = ev3.createSampleProvider(COLOUR_PORT, "lejos.hardware.sensor.EV3ColorSensor", "ColorID");
         openSensors.add(sensor);
 
         return sensor;
     }
 
-    public static EV3GyroSensor getGyroSensor(RemoteEV3 ev3){
-        EV3GyroSensor sensor = new EV3GyroSensor(ev3.getPort(GYRO_PORT));
+    public static RMISampleProvider getGyroSensor(RemoteEV3 ev3){
+        RMISampleProvider sensor = ev3.createSampleProvider(GYRO_PORT, "lejos.hardware.sensor.EV3GyroSensor", "Angle");
         openSensors.add(sensor);
 
         return sensor;
@@ -149,8 +150,13 @@ class RobotUtility{
     }
 
     public static void closeSensors(){
-        for(UARTSensor s : openSensors){
-            s.close();
+        for(RMISampleProvider s : openSensors){
+            try{
+                s.close();
+            }
+            catch(RemoteException e){
+                System.out.println("Failed to close sensor port. Already closed?");
+            }
         }
         openSensors.clear();
     }
@@ -167,7 +173,9 @@ class RobotUtility{
             return;
         }
 
-        EV3UltrasonicSensor ultra = getUltrasonicSensor(brick);
+        RMISampleProvider ultra = getUltrasonicSensor(brick);
+        RMISampleProvider gyro = getGyroSensor(brick);
+        RMISampleProvider color = getColorSensor(brick);
 
         RMIRegulatedMotor m1 = getLeftMotor(brick);
 
