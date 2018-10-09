@@ -18,7 +18,7 @@ public class UltrasonicSensor implements Runnable
 {
     RemoteEV3 ev3;
     RMISampleProvider sp;
-    float [] sample;
+    float sample;
     EV3MediumRegulatedMotor motor;
     boolean running = true;
     Thread thread = null;
@@ -27,7 +27,7 @@ public class UltrasonicSensor implements Runnable
     {
         this.ev3 = ev3;
         sp = ev3.createSampleProvider("S3", "lejos.hardware.sensor.EV3UltrasonicSensor", "Distance");
-        float[] sample = sp.fetchSample();
+        float sample = sp.fetchSample();
         motor = new EV3MediumRegulatedMotor(ev3.getPort("C"));
         running = true;
         if(thread == null)

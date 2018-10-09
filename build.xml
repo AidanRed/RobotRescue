@@ -42,6 +42,7 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" bootclasspathref="boot.classpath" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="robot/src/test/hardware"/>
+            <src path="robot/src/main"/>
             <classpath refid="robot.classpath"/>
         </javac>
     </target>
@@ -49,7 +50,7 @@
        <jar jarfile="${hardware-tests-jar}" basedir="bin"/>
     </target>
     <target name="run-test" depends="build-hardware-tests-jar">
-       <java classname="ColorSensorTest" classpath="${hardware-tests-jar}" classpathref="robot.classpath"/>
+       <java classname="GyroSensorTest" classpath="${hardware-tests-jar}" classpathref="robot.classpath"/>
     </target>
 
 
