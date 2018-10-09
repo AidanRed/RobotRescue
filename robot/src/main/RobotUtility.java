@@ -18,7 +18,11 @@ import java.rmi.NotBoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/* Convenience class for discovering the EV3 brick and interacting with the sensors */
 class RobotUtility{
+    public static final String BRICK_NAME = "RescueBot";
+
     // The sensor ports
     public static final String COLOUR_PORT = "S1";
     public static final String GYRO_PORT = "S2";
