@@ -1,6 +1,6 @@
 /*  
-GUI for controller running on the computer.
-Handles all user input to the system. Key Presses, Button Presses etc.
+* GUI for controller running on the computer.
+* Handles all user input to the system. Key Presses, Button Presses etc.
 */
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.ButtonModel;
+import javax.swing.Timer;
 
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -42,11 +43,12 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.RoundRectangle2D;
 
+import java.awt.even.ActionListener;
+
 /* 
 Creates and contains all the viewable and interactable elements of the controller.
 */
 public class Gui extends JFrame{
-
     Controller controller;
 
     JPanel panel;
@@ -65,7 +67,7 @@ public class Gui extends JFrame{
     Map mapArea;
     JTextArea logArea;
     JScrollPane scrollPane;
-    
+
     //initializes GUI and its elements
     public Gui(){
         this.setSize(1000,500);
@@ -121,7 +123,6 @@ public class Gui extends JFrame{
 
         this.add(panel);
         this.setVisible(true);
-        
     }
     //connect gui to controller
     public void init(Controller c){

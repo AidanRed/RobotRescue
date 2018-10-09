@@ -1,6 +1,4 @@
 /*
-* Author: Abdul Mohsi Jawaid
-* Inspired by Roland Croft's MotorTest
 * Provides an interface to the hardware motors
 */
 

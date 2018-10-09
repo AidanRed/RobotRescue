@@ -1,3 +1,7 @@
+/*
+* Provides an interface to the UltraSonic sensor
+*/
+
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -14,93 +18,65 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 
 import lejos.remote.ev3.RMISampleProvider;
 
-public class UltrasonicSensor implements Runnable
+public class UltrasonicSensor
 {
     RemoteEV3 ev3;
     RMISampleProvider sp;
     float sample;
     EV3MediumRegulatedMotor motor;
     boolean running = true;
-    Thread thread = null;
+
+    boolean increaseAngle = true;
+    private int currentAngle = 0;
 
     public void connect(RemoteEV3 ev3) throws RemoteException
     {
         this.ev3 = ev3;
-        sp = ev3.createSampleProvider("S3", "lejos.hardware.sensor.EV3UltrasonicSensor", "Distance");
-        float sample = sp.fetchSample();
-        motor = new EV3MediumRegulatedMotor(ev3.getPort("C"));
+        sp = RobotUtility.getUltrasonicSensor(ev3);
+        float sample = sp.fetchSample()[0];
+        motor = RobotUtility.getPanningMotor(ev3);
         running = true;
-        if(thread == null)
-        {
-            thread = new Thread(this, "ultrasonicthread");
-            thread.start();
-            System.out.println("thread started");
-        }
     }
 
-    public void run()
+    public int getAngle(){
+        return currentAngle;
+    }
+
+    public void updateMotor()
     {
-        int currAngle = 0;
-        int dist = 0;
-        String toPrint = new String();
-        while(running)
+        if(running)
         {
-            while(currAngle<=45)
-            {
-                dist = getDistance();
-                toPrint = "Angle is: "+currAngle+" distance is: "+dist;
-                System.out.println(toPrint);
-                currAngle += 5;
-                motor.rotate(5);        
-            }
-            currAngle -= 5;
-            motor.rotate(-5);
-            while(currAngle>=-45)
-            {
-                dist = getDistance();
-                toPrint = "Angle is: "+currAngle+" distance is: "+dist;
-                System.out.println(toPrint);
-                currAngle -= 5;
+            if(increaseAngle){
+                currentAngle += 5;
+                motor.rotate(5);
+                if(currentAngle > 45){
+                    increaseAngle = false;
+                }
+            } else{
+                currentAngle -= 5;
                 motor.rotate(-5);
+                if(currentAngle < -45){
+                    increaseAngle = true;
+                }
             }
-            
         }
-        
     }
 
     public int getDistance()
     {
         try{
-            sample = sp.fetchSample();
-            System.out.println(sample[0]);
+            return (int) sp.fetchSample()[0];
             
         }
         catch(RemoteException e){
-            
+            System.out.println("Error attempting to fetch ultrasonic sample");
+
+            return 0;
         }
-        return (int) sample[0];
-        
     }
 
     public void disconnect()
     {
         running = false;
-        try
-        {
-            thread.join(); 
-        }
-        catch(InterruptedException e)
-        {
-
-        }
-        try
-        {
-            sp.close();
-            motor.close();
-            thread = null;
-        }
-        catch(RemoteException e){
-
-        }
     }
 }

@@ -1,5 +1,4 @@
 /*
-* Author: Abdul Mohsi Jawaid
 * Communicates between the GUI and the hardware 
 */
 
@@ -7,6 +6,8 @@
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.ArrayList;
 
 import lejos.hardware.Button;
 import lejos.hardware.port.Port;
@@ -18,16 +19,26 @@ import lejos.utility.Delay;
 
 public class Controller
 {
+    // Delay between each run of the update loop in milliseconds
+    private static final updateDelay = 10;
+    // Delay between each run of the update motor loop in milliseconds
+    private static final motorDelay = 10;
 
     RemoteEV3 ev3;
     Motor motor;
-    ColorSensor colorsensor;
-    GyroSensor gyrosensor;
-    UltrasonicSensor ultrasonicsensor;
+    ColorSensor colorSensor;
+    GyroSensor gyroSensor;
+    UltrasonicSensor ultraSensor;
     Gui gui;
     boolean connected = false;
 
+    String lastDisplayText = "";
+
     int angle = 0;
+    
+    List<int> distances;
+
+    String color = "NONE";
 
     public void init(Gui gui)
     {
@@ -37,17 +48,38 @@ public class Controller
         gyrosensor = new GyroSensor();
         ultrasonicsensor = new UltrasonicSensor();
 
+        distances = new ArrayList<>();
     }
 
     public void connect() throws RemoteException, MalformedURLException, NotBoundException
     {
-        ev3 = new RemoteEV3("192.168.43.132");
+        ev3 = RobotUtility.findBrick(RobotUtility.BRICK_NAME);
+
         motor.connect(ev3);
-        colorsensor.connect(ev3);
-        gyrosensor.connect(ev3);
-        //ultrasonicsensor.connect(ev3);
+        colorSensor.connect(ev3);
+        gyroSensor.connect(ev3);
+        ultraSensor.connect(ev3);
+
         gui.log("Connected");
         connected = true;
+
+        // Set up update loop
+        ActionListener updateRunner = new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                update();
+            }
+        };
+
+        // Set up motor loop
+        ActionListener motorRunner = new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                ultraSensor.updateMotor();
+                distances.add(ultraSensor.getDistance()); // TODO: possibly change this so that the motor just constantly moves and the readings just look at the angle as they happen
+            }
+        };
+
+        new Timer(updateDelay, updateRunner).start();
+        new Timer(motorDelay, motorRunner).start();
     }
 
     public void action(String a)
@@ -56,29 +88,24 @@ public class Controller
             case "move_forward":
                 System.out.println("Moved Forward");
                 motor.moveForward();
-                printSensorInformation();
                 break;
             case "move_backward":
                 System.out.println("Moved Backward");
                 motor.moveBackward();
-                printSensorInformation();
                 break;
             case "turn_left":
                 //angle = (angle - 1) % 360;
                 System.out.println("Turned Left");
                 motor.turnLeft();
-                printSensorInformation();
                 gui.setMapAngle((int)angle);
                 break;
             case "turn_right":
                 //angle = (angle + 1) % 360;
                 System.out.println("Turned Right");
                 motor.turnRight();
-                printSensorInformation();
                 gui.setMapAngle((int)angle);
                 break;
             case "stop":
-                //System.out.println("Stopped");
                 motor.stop();
                 break;
             default:
@@ -86,12 +113,18 @@ public class Controller
         }
     }
 
-    public void printSensorInformation()
+    private void update(){
+        angle = gyroSensor.getAngle();
+        color = colorSensor.detectColor();
+
+        displaySensorInformation();
+    }
+
+    public void displaySensorInformation()
     {
         if(connected == true)
         {
-            angle = gyrosensor.getAngle();
-            gui.setText("COLOR: "+colorsensor.detectColor()+" Angle: "+angle);
+            gui.setText("COLOR: " + color + " Angle: " + Integer.toString(angle) + " Distance: " + Integer.toString(distance[0])); // TODO: update distance displaying to pop entries and display on map
         }
     }
 
@@ -101,5 +134,7 @@ public class Controller
         colorsensor.disconnect();
         gyrosensor.disconnect();
         ultrasonicsensor.disconnect();
+
+        RobotUtility.closeAllPorts();
     }
 }
