@@ -29,6 +29,7 @@ class RobotUtility{
     public static final String LEFT_PORT = "B";
     public static final String PANNING_PORT = "C";
 
+    // Lists of the sensors and ports currently open
     public static List<UARTSensor> openSensors = new ArrayList<>();
     public static List<RMIRegulatedMotor> openMotors = new ArrayList<>();
     
@@ -131,28 +132,36 @@ class RobotUtility{
         return motor;
     }
 
-    public static void closeMotors() throws RemoteException{
+    public static void closeMotors(){
         for(RMIRegulatedMotor m : openMotors){
-            m.close();
+            try{
+                m.close();
+            }
+            catch(RemoteException e){
+                System.out.println("Failed to close motor port. Already closed?");
+            }
         }
         openMotors.clear();
     }
 
-    public static void closeSensors() throws RemoteException{
+    public static void closeSensors(){
         for(UARTSensor s : openSensors){
             s.close();
         }
         openSensors.clear();
     }
 
-    public static void closeAllPorts() throws RemoteException{
+    public static void closeAllPorts(){
         closeMotors();
         closeSensors();
     }
     
 
-    public static void main(String[] args) throws RemoteException{
+    public static void main(String[] args){
         RemoteEV3 brick = findBrick("RescueBot");
+        if(brick == null){
+            return;
+        }
 
         EV3UltrasonicSensor ultra = getUltrasonicSensor(brick);
 
