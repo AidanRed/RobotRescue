@@ -22,13 +22,8 @@ public class ColorSensorTest
 {
     public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException 
     {
-        RemoteEV3 ev3 = new RemoteEV3("192.168.43.132");
-        EV3ColorSensor colorSensor;
-        
-        // Color Sensor assumed to be attached on port 1
-
-        Port sensorPort = ev3.getPort("S1");
-        colorSensor = new EV3ColorSensor(sensorPort);
+        RemoteEV3 ev3 = RobotUtility.findBrick();
+        EV3ColorSensor colorSensor = RobotUtility.getColorSensor(ev3);
         
         // Exits test if Down button pressed
         while(Button.DOWN.isUp())
@@ -51,6 +46,6 @@ public class ColorSensorTest
             }
             Delay.msDelay(100);
         }
-        colorSensor.close();   
+        ev3.closeSensors();
     }
 }

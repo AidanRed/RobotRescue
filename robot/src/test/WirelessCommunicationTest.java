@@ -14,12 +14,9 @@ import lejos.remote.ev3.RemoteEV3;
 
 public class WirelessCommunicationTest {
 
-    public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException {
-        
+    public static void main(String[] args) {
         // play beep if connected to robot
-        RemoteEV3 ev3 = new RemoteEV3("192.168.43.132");
-        Audio sound = ev3.getAudio();
-        sound.systemSound(0);
+        RemoteEV3 ev3 = RobotUtility.findBrick();
     }
 
 }
