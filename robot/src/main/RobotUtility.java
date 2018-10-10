@@ -1,5 +1,5 @@
 /*
-Convenience functions and variables for performing operations on the EV3 Hardware.
+* Convenience functions and variables for performing operations on the EV3 Hardware.
 */
 import lejos.remote.ev3.RemoteEV3;
 import lejos.hardware.BrickFinder;
@@ -143,7 +143,7 @@ class RobotUtility{
                 m.close();
             }
             catch(RemoteException e){
-                System.out.println("Failed to close motor port. Already closed?");
+                System.out.println("Failed to close motor port");
             }
         }
         openMotors.clear();
@@ -155,7 +155,7 @@ class RobotUtility{
                 s.close();
             }
             catch(RemoteException e){
-                System.out.println("Failed to close sensor port. Already closed?");
+                System.out.println("Failed to close sensor port");
             }
         }
         openSensors.clear();

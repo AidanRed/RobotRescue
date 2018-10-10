@@ -138,6 +138,6 @@
     </target>
 
     <target name="run-project" depends="build-project">
-        <java fork="true" classname="RobotUtility" classpath="${project-main-jar}" classpathref="robot.classpath"/>
+        <java fork="true" classname="Main" classpath="${project-main-jar}" classpathref="robot.classpath"/>
     </target>
 </project>
