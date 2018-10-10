@@ -136,7 +136,9 @@
     <target name="build-project" depends="run-controller-junit-tests">
         <jar jarfile="${project-main-jar}" basedir="bin"/>
     </target>
-
+    <target name="run-fingerprinting" depends="build-project">
+        <java fork="true" classname="Fingerprint" classpath="${project-main-jar}" classpathref="robot.classpath"/>
+    </target>
     <target name="run-project" depends="build-project">
         <java fork="true" classname="Main" classpath="${project-main-jar}" classpathref="robot.classpath"/>
     </target>
