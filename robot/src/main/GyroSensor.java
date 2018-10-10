@@ -11,7 +11,7 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3GyroSensor;
 
 
-public class GyroSensor implements Gyroscope
+public class GyroSensor
 {
     RemoteEV3 ev3;
     RMISampleProvider  sp;

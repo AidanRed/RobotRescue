@@ -15,7 +15,7 @@ public class ColorSensor
 {
     RemoteEV3 ev3;
     RMISampleProvider sp;
-    int sample;
+    String sample;
 
     boolean running = false;
 
@@ -29,8 +29,9 @@ public class ColorSensor
 
     public String detectColor()
     {
+        int currentDetectColor;
         try{
-            int currentDetectColor = (int) sp.fetchSample[0];
+            currentDetectColor = (int) sp.fetchSample()[0];
         } catch(RemoteException e){
             System.out.println("Error attempting to fetch colour sample");
 

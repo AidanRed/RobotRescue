@@ -17,12 +17,16 @@ import lejos.robotics.Color;
 import lejos.remote.ev3.RemoteEV3;
 import lejos.utility.Delay;
 
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.Timer;
+
 public class Controller
 {
     // Delay between each run of the update loop in milliseconds
-    private static final updateDelay = 10;
+    private static final int updateDelay = 10;
     // Delay between each run of the update motor loop in milliseconds
-    private static final motorDelay = 10;
+    private static final int motorDelay = 10;
 
     RemoteEV3 ev3;
     Motor motor;
@@ -36,7 +40,7 @@ public class Controller
 
     int angle = 0;
     
-    List<int> distances;
+    float distance = 0;
 
     String color = "NONE";
 
@@ -44,11 +48,11 @@ public class Controller
     {
         this.gui = gui;
         motor = new Motor();
-        colorsensor = new ColorSensor();
-        gyrosensor = new GyroSensor();
-        ultrasonicsensor = new UltrasonicSensor();
+        colorSensor = new ColorSensor();
+        gyroSensor = new GyroSensor();
+        ultraSensor = new UltrasonicSensor();
 
-        distances = new ArrayList<>();
+        //distances = new ArrayList<>();
     }
 
     public void connect() throws RemoteException, MalformedURLException, NotBoundException
@@ -70,16 +74,15 @@ public class Controller
             }
         };
 
+        /*
         // Set up motor loop
         ActionListener motorRunner = new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 ultraSensor.updateMotor();
-                distances.add(ultraSensor.getDistance()); // TODO: possibly change this so that the motor just constantly moves and the readings just look at the angle as they happen
             }
         };
-
+        new Timer(motorDelay, motorRunner).start();*/
         new Timer(updateDelay, updateRunner).start();
-        new Timer(motorDelay, motorRunner).start();
     }
 
     public void action(String a)
@@ -115,7 +118,12 @@ public class Controller
 
     private void update(){
         angle = gyroSensor.getAngle();
+        gui.setMapAngle(angle);
         color = colorSensor.detectColor();
+        distance = ultraSensor.getDistance();
+        if(distance != Float.POSITIVE_INFINITY){
+            
+        }
 
         displaySensorInformation();
     }
@@ -124,16 +132,16 @@ public class Controller
     {
         if(connected == true)
         {
-            gui.setText("COLOR: " + color + " Angle: " + Integer.toString(angle) + " Distance: " + Integer.toString(distance[0])); // TODO: update distance displaying to pop entries and display on map
+            gui.setText("COLOR: " + color + " Angle: " + Integer.toString(angle) + " Distance: " + Float.toString(distance)); // TODO: update distance displaying to pop entries and display on map
         }
     }
 
     public void disconnect()
     {
         motor.disconnect();
-        colorsensor.disconnect();
-        gyrosensor.disconnect();
-        ultrasonicsensor.disconnect();
+        colorSensor.disconnect();
+        gyroSensor.disconnect();
+        ultraSensor.disconnect();
 
         RobotUtility.closeAllPorts();
     }

@@ -17,13 +17,17 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 
 import lejos.remote.ev3.RMISampleProvider;
+import lejos.remote.ev3.RMIRegulatedMotor;
+
+import java.lang.Runnable;
+import java.lang.Thread;
 
 public class UltrasonicSensor
 {
     RemoteEV3 ev3;
     RMISampleProvider sp;
     float sample;
-    EV3MediumRegulatedMotor motor;
+    RMIRegulatedMotor motor;
     boolean running = true;
 
     boolean increaseAngle = true;
@@ -36,36 +40,39 @@ public class UltrasonicSensor
         float sample = sp.fetchSample()[0];
         motor = RobotUtility.getPanningMotor(ev3);
         running = true;
+
+        new Thread(new Runnable(){
+            public void run(){
+                updateMotor();
+            }
+        }).start();
     }
 
     public int getAngle(){
         return currentAngle;
     }
 
-    public void updateMotor()
-    {
-        if(running)
+    public void updateMotor(){
+        while(running)
         {
-            if(increaseAngle){
-                currentAngle += 5;
-                motor.rotate(5);
-                if(currentAngle > 45){
+            try{
+                if(increaseAngle){
+                    motor.rotateTo(45);
                     increaseAngle = false;
-                }
-            } else{
-                currentAngle -= 5;
-                motor.rotate(-5);
-                if(currentAngle < -45){
+                } else{
+                    motor.rotateTo(-45);
                     increaseAngle = true;
                 }
+            } catch(RemoteException e){
+                System.out.println("Failed to update motor");
             }
         }
     }
 
-    public int getDistance()
+    public float getDistance()
     {
         try{
-            return (int) sp.fetchSample()[0];
+            return sp.fetchSample()[0];
             
         }
         catch(RemoteException e){
