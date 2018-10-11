@@ -9,63 +9,107 @@ import java.rmi.RemoteException;
 import lejos.utility.Delay;
 import lejos.hardware.Button;
 import lejos.hardware.motor.UnregulatedMotor;
+import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RemoteEV3;
 
 public class Motor
 {
     RemoteEV3 ev3;
-    UnregulatedMotor motorA;
-    UnregulatedMotor motorB;
+    RMIRegulatedMotor motorLeft;
+    RMIRegulatedMotor motorRight;
 
     public void connect(RemoteEV3 ev3)
     {
         this.ev3 = ev3;
-        motorA = new UnregulatedMotor(ev3.getPort("A"));
-        motorB = new UnregulatedMotor(ev3.getPort("B"));
+        motorLeft = RobotUtility.getLeftMotor(ev3);
+        motorRight = RobotUtility.getRightMotor(ev3);
     }
 
     public void moveForward()
     {
-        motorA.forward();
-        motorB.forward();
-        motorA.setPower(25);
-        motorB.setPower(25);
+        try
+        {
+            motorLeft.forward();
+            motorRight.forward();
+            motorLeft.setSpeed(180);
+            motorRight.setSpeed(180);
+            //motorLeft.rotate(1,true);
+            //motorRight.rotate(1,false);
+        }
+        catch(RemoteException e)
+        {
+            System.out.println("Error attempting to move backward");
+        }
     }
 
     public void moveBackward()
     {
-        motorA.backward();
-        motorB.backward();
-        motorA.setPower(25);
-        motorB.setPower(25);
+        try
+        {
+            motorLeft.backward();
+            motorRight.backward();
+            motorLeft.setSpeed(180);
+            motorRight.setSpeed(180);
+        }
+        catch(RemoteException e)
+        {
+            System.out.println("Error attempting to move backward");
+        }
     }
 
     public void turnLeft()
     {
-        motorA.forward();
-        motorB.backward();
-        motorA.setPower(25);
-        motorB.setPower(25);
+        try
+        {
+            motorRight.forward();
+            motorLeft.backward();
+            motorLeft.setSpeed(180);
+            motorRight.setSpeed(180);;
+        }
+        catch(RemoteException e)
+        {
+            System.out.println("Error attempting to turn left");
+        }
     }
 
     public void turnRight()
     {
-        motorA.backward();
-        motorB.forward();
-        motorA.setPower(25);
-        motorB.setPower(25);
+        try
+        {
+            motorRight.backward();
+            motorLeft.forward();
+            motorLeft.setSpeed(180);
+            motorRight.setSpeed(180);
+        }
+        catch(RemoteException e)
+        {
+            System.out.println("Error attempting to turn right");
+        }
     }
 
     public void stop()
     {
-        motorA.stop();
-        motorB.stop();
+        try
+        {
+            motorLeft.stop(true);
+            motorRight.stop(true);
+        }
+        catch(RemoteException e){
+            System.out.println("Error attempting to stop motor");
+        }
     }
 
     public void disconnect()
     {
-        motorA.close();
-        motorB.close();
+        try
+        {
+            motorLeft.close();
+            motorRight.close();
+        }
+        catch(RemoteException e)
+        {
+            System.out.println("Error attempting to close motor ports");
+        }
     }
 
 }
