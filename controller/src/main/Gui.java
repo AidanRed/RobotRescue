@@ -14,6 +14,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.ButtonModel;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
@@ -21,10 +24,6 @@ import java.awt.Insets;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Graphics2D;
@@ -34,6 +33,16 @@ import java.awt.Color;
 import java.awt.AlphaComposite;
 import java.awt.Shape;
 import java.awt.RenderingHints;
+import java.awt.Point;
+
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Arc2D;
@@ -119,9 +128,20 @@ public class Gui extends JFrame{
         panel.add(toolBar, BorderLayout.NORTH);
 
         this.add(panel);
+        // Perform shutdown tasks when window is closed
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                controller.disconnect();
+                setVisible(false);
+                dispose();
+                System.exit(0);
+            }
+        });
+
         this.setVisible(true);
     }
-    //connect gui to controller
+    // connect gui to controller
     public void init(Controller c){
         controller = c;
         setMapAngle(0);
@@ -130,31 +150,112 @@ public class Gui extends JFrame{
     public void log(String text){
         logArea.append(text + "\n");
     }
-    //replaces current text with given text
+    // replaces current text with given text
     public void setText(String text){
         logArea.setText(text + "\n");
     }
     public void setMapAngle(int a){
         mapArea.setAngle(a+90);
     }
+    // sets position of robot in map
+    public void setRobotPos(int x, int y){
+        mapArea.setPos(x, y);
+    }
+    // increments robot's x and y by given increments 0,0 is center screen
+    public void incRobotPos(int incX, int incY){
+        mapArea.incPos(incX, incY);
+    }
+    // add a point to the map at given coords
+    public void addPoint(int x, int y){
+        mapArea.point(x, y);
+    }
+    // add a line to the map at given coords
+    public void addLine(int x1, int y1, int x2, int y2){
+        mapArea.line(x1, y1, x2, y2);
+    }
+    // clear all points on the map
+    public void clearPoints(){
+        mapArea.clearP();
+    }
+    // clear all lines on the map
+    public void clearLines(){
+        mapArea.clearL();
+    }
+
     // canvas for the map area
     private class Map extends JComponent{
         private int angle = 0;
+        private int x;
+        private int y;
+        private List<Point> points = new ArrayList<Point>();
+        private int pointSize = 2;
+        private List<Line> lines = new ArrayList<Line>();
+
         public void setAngle(int a){
             angle = a;
             repaint();
         }
-        //renders visual map components
+        public void setPos(int xp, int yp){
+            x = xp;
+            y = yp;
+            repaint();
+        }
+        public void incPos(int incX, int incY){
+            x += incX;
+            y += incY;
+            repaint();
+        }
+        public void point(int x, int y){
+            Point p = new Point(x, y);
+            points.add(p);
+            repaint();
+        }
+        public void line(int x1, int y1, int x2, int y2){
+            Line l = new Line(x1, y1, x2, y2);
+            lines.add(l);
+            repaint();
+        }
+        public void clearP(){
+            points.clear();
+            repaint();
+        }
+        public void clearL(){
+            lines.clear();
+            repaint();
+        }
+
+        // renders visual map components
         public void paint(Graphics g){
             
             Graphics2D graph2 = (Graphics2D)g;
 
             graph2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             
-            Shape drawArc = new Arc2D.Double(this.getSize().width/2, this.getSize().height/2, 100, 100, angle-20, 40, Arc2D.PIE);
+            for (Line line : lines) {
+                graph2.drawLine(line.x1, line.y1, line.x2, line.y2);
+            }
+            for (Point point : points) {
+                graph2.drawOval(point.x, point.y, pointSize, pointSize);
+            }
+            Shape drawArc = new Arc2D.Double(this.getSize().width/2 + x,this.getSize().height/2 + y, 100, 100, angle-20, 40, Arc2D.PIE);
             graph2.draw(drawArc);
         }
+
+        private class Line{
+            final int x1; 
+            final int y1;
+            final int x2;
+            final int y2;   
+        
+            public Line(int x1, int y1, int x2, int y2) {
+                this.x1 = x1;
+                this.y1 = y1;
+                this.x2 = x2;
+                this.y2 = y2;
+            }               
+        }
     }
+
     // determines what to do when buttons are pressed or released
     private class BtnModelListener implements ChangeListener {
         private boolean prevPressed = false;

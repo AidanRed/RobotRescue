@@ -138,11 +138,14 @@ public class Controller
 
     public void disconnect()
     {
-        motor.disconnect();
-        colorSensor.disconnect();
-        gyroSensor.disconnect();
-        ultraSensor.disconnect();
+        if(connected){
+            motor.disconnect();
+            colorSensor.disconnect();
+            gyroSensor.disconnect();
+            ultraSensor.disconnect();
 
-        RobotUtility.closeAllPorts();
+            RobotUtility.closeAllPorts();
+            connected = false;
+        }
     }
 }
