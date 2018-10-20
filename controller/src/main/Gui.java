@@ -59,16 +59,18 @@ public class Gui extends JFrame{
 
     JPanel panel;
     JToolBar toolBar;
-
+    
     JButton bConnect;
     JButton bDisconnect;
     JButton bAuto;
     JButton bManual;
-
+    
+    JPanel navPanel;
     JButton bLeft;
     JButton bRight;
     JButton bUp;
     JButton bDown;
+    JButton bClear;
 
     Map mapArea;
     JTextArea logArea;
@@ -82,50 +84,73 @@ public class Gui extends JFrame{
         this.setTitle("Robot Controller");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        panel = new JPanel(new BorderLayout());
-
+        
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new KEDispatcher());
 
-        toolBar = new JToolBar("Controls");
-        toolBar.setFloatable(false);
+        panel = new JPanel(new BorderLayout());
 
-        bConnect = new JButton("Connect");
-        bConnect.getModel().addChangeListener(new BtnModelListener());
-        toolBar.add(bConnect);
-        bDisconnect = new JButton("Disconnect");
-        bDisconnect.getModel().addChangeListener(new BtnModelListener());
-        toolBar.add(bDisconnect);
+            toolBar = new JToolBar("Controls");
+            toolBar.setFloatable(false);
 
-        bAuto = new JButton("Auto");
-        bAuto.getModel().addChangeListener(new BtnModelListener());
-        toolBar.add(bAuto);
-        bManual = new JButton("Manual");
-        bManual.getModel().addChangeListener(new BtnModelListener());
-        toolBar.add(bManual);
+                bConnect = new JButton("Connect");
+                bConnect.getModel().addChangeListener(new BtnModelListener());
+                toolBar.add(bConnect);
+                bDisconnect = new JButton("Disconnect");
+                bDisconnect.getModel().addChangeListener(new BtnModelListener());
+                toolBar.add(bDisconnect);
 
-        bLeft = new JButton("Left");
-        bLeft.getModel().addChangeListener(new BtnModelListener());
-        toolBar.add(bLeft);
-        bRight = new JButton("Right");
-        bRight.getModel().addChangeListener(new BtnModelListener());
-        toolBar.add(bRight);
-        bUp = new JButton("Up");
-        bUp.getModel().addChangeListener(new BtnModelListener());
-        toolBar.add(bUp);
-        bDown = new JButton("Down");
-        bDown.getModel().addChangeListener(new BtnModelListener());
-        toolBar.add(bDown);
+                bAuto = new JButton("Auto");
+                bAuto.getModel().addChangeListener(new BtnModelListener());
+                toolBar.add(bAuto);
+                bManual = new JButton("Manual");
+                bManual.getModel().addChangeListener(new BtnModelListener());
+                toolBar.add(bManual);
 
-        mapArea = new Map();
-        panel.add(mapArea, BorderLayout.CENTER);
+                navPanel = new JPanel(new GridBagLayout());
+                navPanel.setOpaque(false);
+                GridBagConstraints gridCon = new GridBagConstraints();
+                
+                    bLeft = new JButton("Left");
+                    bLeft.setContentAreaFilled(false);
+                    bLeft.getModel().addChangeListener(new BtnModelListener());
+                    gridCon.gridx = 0;
+                    gridCon.gridy = 1;
+                    navPanel.add(bLeft,gridCon);
+                    bRight = new JButton("Right");
+                    bRight.setContentAreaFilled(false);
+                    bRight.getModel().addChangeListener(new BtnModelListener());
+                    gridCon.gridx = 2;
+                    gridCon.gridy = 1;
+                    navPanel.add(bRight,gridCon);
+                    bUp = new JButton("Up");
+                    bUp.setContentAreaFilled(false);
+                    bUp.getModel().addChangeListener(new BtnModelListener());
+                    gridCon.gridx = 1;
+                    gridCon.gridy = 0;
+                    navPanel.add(bUp,gridCon);
+                    bDown = new JButton("Down");
+                    bDown.setContentAreaFilled(false);
+                    bDown.getModel().addChangeListener(new BtnModelListener());
+                    gridCon.gridx = 1;
+                    gridCon.gridy = 2;
+                    navPanel.add(bDown,gridCon);
+            
+                toolBar.add(navPanel);
+                
+                bClear = new JButton("Clear");
+                bClear.getModel().addChangeListener(new BtnModelListener());
+                toolBar.add(bClear);
 
-        logArea = new JTextArea();
-        scrollPane = new JScrollPane(logArea);
-        scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width, 50));
-        panel.add(scrollPane, BorderLayout.SOUTH);
-        
-        panel.add(toolBar, BorderLayout.NORTH);
+                mapArea = new Map();
+                panel.add(mapArea, BorderLayout.CENTER);
+
+                logArea = new JTextArea();
+                scrollPane = new JScrollPane(logArea);
+                scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width, 50));
+                panel.add(scrollPane, BorderLayout.SOUTH);
+                
+            panel.add(toolBar, BorderLayout.NORTH);
 
         this.add(panel);
         // Perform shutdown tasks when window is closed
@@ -133,19 +158,18 @@ public class Gui extends JFrame{
             @Override
             public void windowClosing(WindowEvent e) {
                 controller.disconnect();
-                setVisible(false);
-                dispose();
-                System.exit(0);
             }
         });
 
         this.setVisible(true);
     }
+
     // connect gui to controller
     public void init(Controller c){
         controller = c;
         setMapAngle(0);
     }
+
     // adds given text to end of current text in log area
     public void log(String text){
         logArea.append(text + "\n");
@@ -154,9 +178,20 @@ public class Gui extends JFrame{
     public void setText(String text){
         logArea.setText(text + "\n");
     }
+
     public void setMapAngle(int a){
         mapArea.setAngle(a+90);
     }
+
+    // Getter for width of map component
+    public int getMapWidth(){
+        return mapArea.getSize().width;
+    }
+    // Getter for height of map component
+    public int getMapHeight(){
+        return mapArea.getSize().height;
+    }
+
     // sets position of robot in map
     public void setRobotPos(int x, int y){
         mapArea.setPos(x, y);
@@ -182,11 +217,19 @@ public class Gui extends JFrame{
         mapArea.clearL();
     }
 
+
     // canvas for the map area
     private class Map extends JComponent{
         private int angle = 0;
         private int x;
         private int y;
+        // Width and height of vision arc if it were a full ellipse
+        private int arcWidth = 100;
+        private int arcHeight = 100;
+        // Width and height of rectangle representing robot
+        private int robWidth = 20;
+        private int robHeight = 30;
+
         private List<Point> points = new ArrayList<Point>();
         private int pointSize = 2;
         private List<Line> lines = new ArrayList<Line>();
@@ -237,8 +280,13 @@ public class Gui extends JFrame{
             for (Point point : points) {
                 graph2.drawOval(point.x, point.y, pointSize, pointSize);
             }
-            Shape drawArc = new Arc2D.Double(this.getSize().width/2 + x,this.getSize().height/2 + y, 100, 100, angle-20, 40, Arc2D.PIE);
+            Shape drawArc = new Arc2D.Double(this.getSize().width/2-arcWidth/2 + x,this.getSize().height/2-arcHeight/2 + y, arcWidth, arcHeight, angle-45, 90, Arc2D.PIE);
+            graph2.setColor(new Color(140,140,140,150));
             graph2.draw(drawArc);
+            graph2.setColor(new Color(140,140,140,50));
+            graph2.fillRect(this.getSize().width/2-robWidth/2 + x,this.getSize().height/2-robHeight/2 + y, robWidth, robHeight);
+            graph2.setColor(new Color(0,0,0));
+            graph2.drawRect(this.getSize().width/2-robWidth/2 + x,this.getSize().height/2-robHeight/2 + y, robWidth, robHeight);
         }
 
         private class Line{
@@ -273,9 +321,6 @@ public class Gui extends JFrame{
 
                         }if(model == bDisconnect.getModel()){
                             controller.disconnect();
-                            setVisible(false);
-                            dispose();
-                            System.exit(0);
 
                         }if(model == bUp.getModel()){
                             controller.action("move_forward");
@@ -294,6 +339,9 @@ public class Gui extends JFrame{
 
                         }if(model == bManual.getModel()){
                             // log("Manual Mode");
+                        }if(model == bClear.getModel()){
+                            clearLines();
+                            clearPoints();
                         }
                     } catch (Exception ex){
                         System.out.println(ex);
@@ -320,9 +368,52 @@ public class Gui extends JFrame{
                             break;
                         case KeyEvent.VK_D:
                             controller.disconnect();
-                            setVisible(false);
-                            dispose();
-                            System.exit(0);
+                            break;
+                        case KeyEvent.VK_Z:
+                            addPoint(0,0);
+                            addPoint(10,10);
+                            addPoint(20,20);
+                            addPoint(30,30);
+                            addPoint(40,40);
+                            addPoint(50,50);
+                            addPoint(60,60);
+                            addPoint(70,70);
+                            addPoint(70,0);
+                            addPoint(60,10);
+                            addPoint(50,20);
+                            addPoint(40,30);
+                            addPoint(30,40);
+                            addPoint(20,50);
+                            addPoint(10,60);
+                            addPoint(0,70);
+                            addLine(0,0,70,70);
+                            addLine(70,0,0,70);
+
+                            addPoint(0,0);
+                            addPoint(getMapWidth()/8,getMapHeight()/8);
+                            addPoint(getMapWidth()/8*2,getMapHeight()/8*2);
+                            addPoint(getMapWidth()/8*3,getMapHeight()/8*3);
+                            addPoint(getMapWidth()/8*4,getMapHeight()/8*4);
+                            addPoint(getMapWidth()/8*5,getMapHeight()/8*5);
+                            addPoint(getMapWidth()/8*6,getMapHeight()/8*6);
+                            addPoint(getMapWidth()/8*7,getMapHeight()/8*7);
+                            addPoint(getMapWidth(),getMapHeight());
+                            addPoint(getMapWidth(),0);
+                            addPoint(getMapWidth()/8*7,getMapHeight()/8);
+                            addPoint(getMapWidth()/8*6,getMapHeight()/8*2);
+                            addPoint(getMapWidth()/8*5,getMapHeight()/8*3);
+                            addPoint(getMapWidth()/8*4,getMapHeight()/8*4);
+                            addPoint(getMapWidth()/8*3,getMapHeight()/8*5);
+                            addPoint(getMapWidth()/8*2,getMapHeight()/8*6);
+                            addPoint(getMapWidth()/8,getMapHeight()/8*7);
+                            addPoint(0,getMapHeight());
+                            addLine(0,0,getMapWidth(),getMapHeight());
+                            addLine(getMapWidth(),0,0,getMapHeight());
+
+                            break;
+                        case KeyEvent.VK_X:
+                            clearLines();
+                            clearPoints();
                             break;
                         case KeyEvent.VK_UP:
                             controller.action("move_forward");
