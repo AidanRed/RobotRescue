@@ -82,7 +82,6 @@ public class Controller
                 update();
             }
         };
-
         /*
         // Set up motor loop
         ActionListener motorRunner = new ActionListener() {
@@ -92,6 +91,10 @@ public class Controller
         };
         new Timer(motorDelay, motorRunner).start();*/
         new Timer(updateDelay, updateRunner).start();
+    }
+
+    public boolean isConnected(){
+        return connected;
     }
 
     public void action(String a)
