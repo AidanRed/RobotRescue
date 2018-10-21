@@ -74,6 +74,9 @@ public class Gui extends JFrame{
     JTextArea logArea;
     JScrollPane scrollPane;
 
+    public int mapWidth;
+    public int mapHeight;
+
     //initializes GUI and its elements
     public Gui(){
         this.setSize(1000,500);
@@ -139,6 +142,7 @@ public class Gui extends JFrame{
             }
         });
 
+
         this.setVisible(true);
     }
     // connect gui to controller
@@ -181,6 +185,26 @@ public class Gui extends JFrame{
     public void clearLines(){
         mapArea.clearL();
     }
+    public int getX(){
+        if(mapArea != null){
+            return mapArea.getX();
+        }
+        return 0;
+    }
+    public int getY(){
+        if(mapArea != null){
+            return mapArea.getY();
+        }
+        return 0;
+    }
+
+    public int getMapWidth(){
+        return mapArea.mapWidth;
+    }
+
+    public int getMapHeight(){
+        return mapArea.mapHeight;
+    }
 
     // canvas for the map area
     private class Map extends JComponent{
@@ -190,6 +214,9 @@ public class Gui extends JFrame{
         private List<Point> points = new ArrayList<Point>();
         private int pointSize = 2;
         private List<Line> lines = new ArrayList<Line>();
+        public int mapWidth;
+        public int mapHeight;
+        private boolean notSet = true;
 
         public void setAngle(int a){
             angle = a;
@@ -223,9 +250,26 @@ public class Gui extends JFrame{
             lines.clear();
             repaint();
         }
+        public int getX(){
+            return x;
+        }
+        public int getY(){
+            return y;
+        }
 
         // renders visual map components
         public void paint(Graphics g){
+
+            /*
+            mapWidth = 
+            mapHeight = ;
+
+            setRobotPos(mapWidth / 2, mapHeight / 2);*/
+            if(notSet){
+                mapWidth = mapArea.getSize().width;
+                mapHeight = mapArea.getSize().height;
+                notSet = false;
+            }
             
             Graphics2D graph2 = (Graphics2D)g;
 
@@ -237,7 +281,7 @@ public class Gui extends JFrame{
             for (Point point : points) {
                 graph2.drawOval(point.x, point.y, pointSize, pointSize);
             }
-            Shape drawArc = new Arc2D.Double(this.getSize().width/2 + x,this.getSize().height/2 + y, 100, 100, angle-20, 40, Arc2D.PIE);
+            Shape drawArc = new Arc2D.Double(mapWidth / 2 + x - 50, mapHeight / 2 + y - 50, 100, 100, angle-20, 40, Arc2D.PIE);
             graph2.draw(drawArc);
         }
 

@@ -58,6 +58,15 @@ public class Controller
     public void connect() throws RemoteException, MalformedURLException, NotBoundException
     {
         ev3 = RobotUtility.findBrick(RobotUtility.BRICK_NAME);
+        while(ev3 == null){
+            System.out.println("Press enter to retry..");
+            try{
+                System.in.read();
+            }catch(Exception e){
+
+            }
+            ev3 = RobotUtility.findBrick(RobotUtility.BRICK_NAME);
+        }
 
         motor.connect(ev3);
         colorSensor.connect(ev3);
@@ -120,9 +129,12 @@ public class Controller
         angle = gyroSensor.getAngle();
         gui.setMapAngle(angle);
         color = colorSensor.detectColor();
-        distance = ultraSensor.getDistance();
+        distance = ultraSensor.getDistance() * 100;
         if(distance != Float.POSITIVE_INFINITY){
-            
+            double theta = Math.toRadians(ultraSensor.getAngle()-90);
+            int dx = (int)(Math.cos(theta+angle) * distance);
+            int dy = (int)(Math.sin(theta+angle) * distance);
+            gui.addPoint(gui.getMapWidth() / 2 + dx, gui.getMapHeight() / 2 + dy);
         }
 
         displaySensorInformation();
