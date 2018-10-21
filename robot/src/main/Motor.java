@@ -93,6 +93,7 @@ public class Motor
         {
             motorLeft.stop(true);
             motorRight.stop(true);
+            System.out.println("Stopped motors");
         }
         catch(RemoteException e){
             System.out.println("Error attempting to stop motor");
