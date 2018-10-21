@@ -132,11 +132,11 @@ public class Controller
         angle = gyroSensor.getAngle();
         gui.setMapAngle(angle);
         color = colorSensor.detectColor();
-        distance = ultraSensor.getDistance() * 100;
+        distance = ultraSensor.getDistance() * 100f;
         if(distance != Float.POSITIVE_INFINITY){
-            double theta = Math.toRadians(ultraSensor.getAngle()-90);
-            int dx = (int)(Math.cos(theta+angle) * distance);
-            int dy = (int)(Math.sin(theta+angle) * distance);
+            double theta = Math.toRadians((ultraSensor.getAngle() + angle) - 90);
+            int dx = (int)(Math.cos(theta) * distance);
+            int dy = (int)(Math.sin(theta) * distance);
             gui.addPoint(gui.getMapWidth() / 2 + dx, gui.getMapHeight() / 2 + dy);
         }
 

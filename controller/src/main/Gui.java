@@ -424,7 +424,6 @@ public class Gui extends JFrame{
                                 e.getKeyCode() == KeyEvent.VK_RIGHT ){
                     prevAction = "";
                     if(connected){
-                        System.out.println("STOPPING!");
                         controller.action("stop");
                     }
                 } 
