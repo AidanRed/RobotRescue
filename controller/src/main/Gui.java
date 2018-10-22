@@ -56,6 +56,7 @@ Creates and contains all the viewable and interactable elements of the controlle
 */
 public class Gui extends JFrame{
     Controller controller;
+    boolean connected = false;
 
     JPanel panel;
     JToolBar toolBar;
@@ -318,20 +319,21 @@ public class Gui extends JFrame{
                     try{
                         if(model == bConnect.getModel()){
                             controller.connect();
+                            connected = controller.isConnected();
 
                         }if(model == bDisconnect.getModel()){
                             controller.disconnect();
 
-                        }if(model == bUp.getModel()){
+                        }if(connected && model == bUp.getModel()){
                             controller.action("move_forward");
 
-                        }if(model == bDown.getModel()){
+                        }if(connected && model == bDown.getModel()){
                             controller.action("move_backward");
 
-                        }if(model == bLeft.getModel()){
+                        }if(connected && model == bLeft.getModel()){
                             controller.action("turn_left");
 
-                        }if(model == bRight.getModel()){
+                        }if(connected && model == bRight.getModel()){
                             controller.action("turn_right");
 
                         }if(model == bAuto.getModel()){
@@ -347,8 +349,8 @@ public class Gui extends JFrame{
                         System.out.println(ex);
                     }
                 } else {
-                    if(model == bUp.getModel() || model == bDown.getModel() || 
-                                    model == bLeft.getModel() || model == bRight.getModel()){
+                    if(connected && (model == bUp.getModel() || model == bDown.getModel() || 
+                                    model == bLeft.getModel() || model == bRight.getModel())){
                         controller.action("stop");
                     }
                 }
@@ -358,16 +360,33 @@ public class Gui extends JFrame{
     }
     // Listens for key presses no matter what component is in focus
     private class KEDispatcher implements KeyEventDispatcher {
+        private String prevAction = "";
+        private String CONNECT = "connect";
+        private String DISCONNECT = "disconnect";
+        private String FORWARD = "move_forward";
+        private String BACKWARD = "move_backward";
+        private String LEFT = "turn_left";
+        private String RIGHT = "turn_right";
+
         @Override
         public boolean dispatchKeyEvent(KeyEvent e) {
+            
             if (e.getID() == KeyEvent.KEY_PRESSED) {
+                
                 try{
                     switch(e.getKeyCode()){
                         case KeyEvent.VK_C:
-                            controller.connect();
+                            if(!prevAction.equals(CONNECT)){
+                                prevAction = CONNECT;
+                                controller.connect();
+                                connected = controller.isConnected();
+                            }
                             break;
                         case KeyEvent.VK_D:
-                            controller.disconnect();
+                            if(!prevAction.equals(DISCONNECT)){
+                                prevAction = DISCONNECT;
+                                controller.disconnect();
+                            }
                             break;
                         case KeyEvent.VK_Z:
                             addPoint(0,0);
@@ -415,17 +434,30 @@ public class Gui extends JFrame{
                             clearLines();
                             clearPoints();
                             break;
+                            
                         case KeyEvent.VK_UP:
-                            controller.action("move_forward");
+                            if(connected && !prevAction.equals(FORWARD)){
+                                prevAction = FORWARD;
+                                controller.action(FORWARD);
+                            }
                             break;
                         case KeyEvent.VK_DOWN:
-                            controller.action("move_backward");
+                            if(connected && !prevAction.equals(BACKWARD)){
+                                prevAction = BACKWARD;
+                                controller.action(BACKWARD);
+                            }
                             break;
                         case KeyEvent.VK_LEFT:
-                            controller.action("turn_left");
+                            if(connected && !prevAction.equals(LEFT)){
+                                prevAction = LEFT;
+                                controller.action(LEFT);
+                            }
                             break;
                         case KeyEvent.VK_RIGHT:
-                            controller.action("turn_right");
+                            if(connected && !prevAction.equals(RIGHT)){
+                                prevAction = RIGHT;
+                                controller.action(RIGHT);
+                            }
                             break;
                         default:
                             System.out.println("Invalid Key Pressed");
@@ -438,7 +470,11 @@ public class Gui extends JFrame{
                 if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN ||
                                 e.getKeyCode() == KeyEvent.VK_LEFT || 
                                 e.getKeyCode() == KeyEvent.VK_RIGHT ){
-                    controller.action("stop");
+                    prevAction = "";
+                    if(connected){
+                        System.out.println("STOPPING!");
+                        controller.action("stop");
+                    }
                 } 
             } else if (e.getID() == KeyEvent.KEY_TYPED) {
                 
