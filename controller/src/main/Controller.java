@@ -139,7 +139,16 @@ public class Controller
             int dy = (int)(Math.sin(theta) * distance);
             gui.addPoint(gui.getMapWidth() / 2 + dx, gui.getMapHeight() / 2 + dy);
         }
-
+        if(motor.timeStarted>motor.timeStopped)
+        {
+            // motor running
+            double timepassed = Math.min(motor.timeStopped-motor.timeStarted, updateDelay);
+            double robotDistance = 180.0 * timepassed;
+            double theta = Math.toRadians(angle);
+            int robotX = (int)(Math.cos(theta) * robotDistance);
+            int robotY = (int)(Math.sin(theta) * robotDistance);
+            gui.incRobotPos(robotX,robotY);
+        }
         displaySensorInformation();
     }
 
