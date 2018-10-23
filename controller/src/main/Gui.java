@@ -198,6 +198,14 @@ public class Gui extends JFrame{
         return mapArea.mapHeight;
     }
 
+    public int getRobotX(){
+        return mapArea.getRobotX();
+    }
+
+    public int getRobotY(){
+        return mapArea.getRobotY();
+    }
+
     // canvas for the map area
     private class Map extends JComponent{
         private int angle = 0;
@@ -219,6 +227,12 @@ public class Gui extends JFrame{
             robotY = yp;
 
             repaint();
+        }
+        public int getRobotX(){
+            return robotX;
+        }
+        public int getRobotY(){
+            return robotY;
         }
         public void incPos(int incX, int incY){
             robotX += incX;
@@ -265,7 +279,7 @@ public class Gui extends JFrame{
             }
             double drawX = mapWidth / 2 + robotX - 50;
             double drawY = mapHeight / 2 + robotY;
-            Shape drawArc = new Arc2D.Double(drawX, drawY, 75, 50, angle-22.5, 45, Arc2D.PIE);
+            Shape drawArc = new Arc2D.Double(drawX, drawY, 50, 50, angle-22.5, 45, Arc2D.PIE);
             graph2.draw(drawArc);
         }
 
@@ -273,7 +287,7 @@ public class Gui extends JFrame{
             final int x1; 
             final int y1;
             final int x2;
-            final int y2;   
+            final int y2;
         
             public Line(int x1, int y1, int x2, int y2) {
                 this.x1 = x1;

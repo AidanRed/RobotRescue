@@ -101,24 +101,16 @@ public class Controller
     {
         switch(a){
             case "move_forward":
-                System.out.println("Moved Forward");
                 motor.moveForward();
                 break;
             case "move_backward":
-                System.out.println("Moved Backward");
                 motor.moveBackward();
                 break;
             case "turn_left":
-                //angle = (angle - 1) % 360;
-                System.out.println("Turned Left");
                 motor.turnLeft();
-                gui.setMapAngle((int)angle);
                 break;
             case "turn_right":
-                //angle = (angle + 1) % 360;
-                System.out.println("Turned Right");
                 motor.turnRight();
-                gui.setMapAngle((int)angle);
                 break;
             case "stop":
                 motor.stop();
@@ -136,8 +128,8 @@ public class Controller
         distance = ultraSensor.getDistance() * 100f;
         if(distance != Float.POSITIVE_INFINITY){
             double theta = Math.toRadians(ultraSensor.getAngle() + angle);
-            int dx = (int)(Math.cos(theta) * distance);
-            int dy = (int)(Math.sin(theta) * distance);
+            int dx = gui.getRobotX() + -(int)(Math.sin(theta) * distance);
+            int dy = gui.getRobotY() + -(int)(Math.cos(theta) * distance);
             gui.addPoint(gui.getMapWidth() / 2 + dx, gui.getMapHeight() / 2 + dy);
         }
         if(motor.timeStarted>motor.timeStopped)
