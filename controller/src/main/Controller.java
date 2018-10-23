@@ -137,7 +137,7 @@ public class Controller
             // motor running
             double startExtra = (System.currentTimeMillis()-motor.timeStarted)/100d;
             double timepassed = Math.min(startExtra, ((double)updateDelay)/100d);
-            double robotDistance = (Motor.CENT_PER_SEC * timepassed) * 10d * (double)motor.direction;
+            double robotDistance = (Motor.CENT_PER_SEC * timepassed) * 5.5d * (double)motor.direction;
             double theta = Math.toRadians(angle);
             double robotY = -(Math.cos(theta) * robotDistance);
             double robotX = -(Math.sin(theta) * robotDistance);
@@ -164,6 +164,10 @@ public class Controller
 
             RobotUtility.closeAllPorts();
             connected = false;
+            gui.clearLines();
+            gui.clearPoints();
+            gui.setRobotPos(0, 0);
+            gui.setMapAngle(0);
         }
     }
 }

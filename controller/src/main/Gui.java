@@ -85,7 +85,7 @@ public class Gui extends JFrame{
 
     //initializes GUI and its elements
     public Gui(){
-        this.setSize(1920,1080);
+        this.setSize(1280,800);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setTitle("Robot Controller");
@@ -188,7 +188,7 @@ public class Gui extends JFrame{
     }
 
     public void setMapAngle(int a){
-        mapArea.setAngle(a+90);
+        mapArea.setAngle(a);
     }
 
     // Getter for width of map component
@@ -330,17 +330,22 @@ public class Gui extends JFrame{
                 graph2.drawOval(point.x, point.y, pointSize, pointSize);
             }
 
-            double drawX = (halfMapWidth + robotX);
-            double drawY = (halfMapHeight + robotY);
+            double drawX = -halfArcWidth;
+            double drawY = -halfArcHeight;
 
-            Shape drawArc = new Arc2D.Double(drawX,drawY, arcWidth, arcHeight, angle-22.5, 45, Arc2D.PIE);
-            graph2.setColor(new Color(140,140,140,150));
-
-            graph2.draw(drawArc);
+            
+            graph2.translate(halfMapWidth + robotX, halfMapHeight + robotY);
+            graph2.rotate(Math.toRadians(-angle));
+            
             graph2.setColor(new Color(140,140,140,50));
-            graph2.fillRect((int)(halfMapWidth + halfRobWidth + robotX), (int)(halfMapHeight + halfRobHeight + robotY), robWidth, robHeight);
+            graph2.fillRect(- halfRobWidth, - halfRobHeight, robWidth, robHeight);
             graph2.setColor(new Color(0,0,0));
-            graph2.drawRect((int)(halfMapWidth + halfRobWidth + robotX), (int)(halfMapHeight + halfRobHeight + robotY), robWidth, robHeight);
+            graph2.drawRect(- halfRobWidth, - halfRobHeight, robWidth, robHeight);
+            Shape drawArc = new Arc2D.Double(drawX,drawY, arcWidth, arcHeight, 90-22.5, 45, Arc2D.PIE);
+            graph2.setColor(new Color(140,140,140,150));
+            graph2.draw(drawArc);
+            graph2.rotate(Math.toRadians((angle)));
+            graph2.translate(-(halfMapWidth + robotX), -(halfMapHeight + robotY));
         }
 
         private class Line{
