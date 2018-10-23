@@ -18,21 +18,46 @@ public class Motor
     RMIRegulatedMotor motorLeft;
     RMIRegulatedMotor motorRight;
 
+    public static final int ROT_SPEED = 180;
+    // Centimetres moved from one rotation of the wheel
+    public static final double ROTATION_DIST = 18.22;
+    // Centimetres per second movement speed
+    //public static final double CENT_PER_SEC = ((double)ROT_SPEED / 360) * ROTATION_DIST; 
+    public static final double CENT_PER_SEC = 9.11; 
+
+    public int direction = 1;
+    public Long timeStarted;
+    public Long timeStopped;
+
+    
+
     public void connect(RemoteEV3 ev3)
     {
         this.ev3 = ev3;
         motorLeft = RobotUtility.getLeftMotor(ev3);
         motorRight = RobotUtility.getRightMotor(ev3);
+
+        try{
+            motorLeft.setSpeed(ROT_SPEED);
+            motorRight.setSpeed(ROT_SPEED);
+        }
+        catch(RemoteException e){
+            System.out.println("Error failed to set motor speed");
+        }
+
+        timeStarted = 0L;
+        timeStopped = 1L;
     }
 
     public void moveForward()
     {
         try
         {
+            direction = 1;
             motorLeft.forward();
             motorRight.forward();
-            motorLeft.setSpeed(180);
-            motorRight.setSpeed(180);
+            
+            timeStarted = System.currentTimeMillis();
             //motorLeft.rotate(1,true);
             //motorRight.rotate(1,false);
         }
@@ -46,10 +71,10 @@ public class Motor
     {
         try
         {
+            direction = -1;
             motorLeft.backward();
             motorRight.backward();
-            motorLeft.setSpeed(180);
-            motorRight.setSpeed(180);
+            timeStarted = System.currentTimeMillis();
         }
         catch(RemoteException e)
         {
@@ -63,8 +88,7 @@ public class Motor
         {
             motorRight.forward();
             motorLeft.backward();
-            motorLeft.setSpeed(180);
-            motorRight.setSpeed(180);;
+            //timeStarted = System.currentTimeMillis();
         }
         catch(RemoteException e)
         {
@@ -78,8 +102,7 @@ public class Motor
         {
             motorRight.backward();
             motorLeft.forward();
-            motorLeft.setSpeed(180);
-            motorRight.setSpeed(180);
+            //timeStarted = System.currentTimeMillis();
         }
         catch(RemoteException e)
         {
@@ -93,7 +116,9 @@ public class Motor
         {
             motorLeft.stop(true);
             motorRight.stop(true);
-            System.out.println("Stopped motors");
+            if(timeStarted > timeStopped){
+                timeStopped = System.currentTimeMillis();
+            }
         }
         catch(RemoteException e){
             System.out.println("Error attempting to stop motor");

@@ -39,6 +39,7 @@ public class UltrasonicSensor
         sp = RobotUtility.getUltrasonicSensor(ev3);
         float sample = sp.fetchSample()[0];
         motor = RobotUtility.getPanningMotor(ev3);
+        motor.setSpeed(motor.getSpeed()/2);
         running = true;
 
         new Thread(new Runnable(){
@@ -49,7 +50,12 @@ public class UltrasonicSensor
     }
 
     public int getAngle(){
-        return currentAngle;
+        try{
+            return motor.getTachoCount();
+        } catch (RemoteException e){
+            System.out.println("Failed to get motor position");
+            return -1;
+        }
     }
 
     public void updateMotor(){

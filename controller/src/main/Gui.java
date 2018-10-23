@@ -13,6 +13,9 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.ButtonModel;
+import javax.swing.SwingUtilities;
+
+import java.lang.Runnable;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -77,9 +80,12 @@ public class Gui extends JFrame{
     JTextArea logArea;
     JScrollPane scrollPane;
 
+    public int mapWidth;
+    public int mapHeight;
+
     //initializes GUI and its elements
     public Gui(){
-        this.setSize(1000,500);
+        this.setSize(1920,1080);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setTitle("Robot Controller");
@@ -162,6 +168,7 @@ public class Gui extends JFrame{
             }
         });
 
+
         this.setVisible(true);
     }
 
@@ -194,11 +201,11 @@ public class Gui extends JFrame{
     }
 
     // sets position of robot in map
-    public void setRobotPos(int x, int y){
+    public void setRobotPos(double x, double y){
         mapArea.setPos(x, y);
     }
     // increments robot's x and y by given increments 0,0 is center screen
-    public void incRobotPos(int incX, int incY){
+    public void incRobotPos(double incX, double incY){
         mapArea.incPos(incX, incY);
     }
     // add a point to the map at given coords
@@ -218,15 +225,32 @@ public class Gui extends JFrame{
         mapArea.clearL();
     }
 
+    public int getMapWidth(){
+        return mapArea.mapWidth;
+    }
+
+    public int getMapHeight(){
+        return mapArea.mapHeight;
+    }
+
+    public double getRobotX(){
+        return mapArea.getRobotX();
+    }
+
+    public double getRobotY(){
+        return mapArea.getRobotY();
+    }
 
     // canvas for the map area
     private class Map extends JComponent{
         private int angle = 0;
-        private int x;
-        private int y;
+
+        private double robotX;
+        private double robotY;
+        
         // Width and height of vision arc if it were a full ellipse
-        private int arcWidth = 100;
-        private int arcHeight = 100;
+        private int arcWidth = 50;
+        private int arcHeight = 50;
         // Width and height of rectangle representing robot
         private int robWidth = 20;
         private int robHeight = 30;
@@ -234,19 +258,30 @@ public class Gui extends JFrame{
         private List<Point> points = new ArrayList<Point>();
         private int pointSize = 2;
         private List<Line> lines = new ArrayList<Line>();
+        public int mapWidth;
+        public int mapHeight;
+        private boolean notSet = true;
 
         public void setAngle(int a){
             angle = a;
             repaint();
         }
-        public void setPos(int xp, int yp){
-            x = xp;
-            y = yp;
+        public void setPos(double xp, double yp){
+            robotX = xp;
+            robotY = yp;
+
             repaint();
         }
-        public void incPos(int incX, int incY){
-            x += incX;
-            y += incY;
+        public double getRobotX(){
+            return robotX;
+        }
+        public double getRobotY(){
+            return robotY;
+        }
+        public void incPos(double incX, double incY){
+            robotX += incX;
+            robotY += incY;
+            
             repaint();
         }
         public void point(int x, int y){
@@ -270,6 +305,11 @@ public class Gui extends JFrame{
 
         // renders visual map components
         public void paint(Graphics g){
+            if(notSet){
+                mapWidth = mapArea.getSize().width;
+                mapHeight = mapArea.getSize().height;
+                notSet = false;
+            }
             
             Graphics2D graph2 = (Graphics2D)g;
 
@@ -281,8 +321,13 @@ public class Gui extends JFrame{
             for (Point point : points) {
                 graph2.drawOval(point.x, point.y, pointSize, pointSize);
             }
-            Shape drawArc = new Arc2D.Double(this.getSize().width/2-arcWidth/2 + x,this.getSize().height/2-arcHeight/2 + y, arcWidth, arcHeight, angle-45, 90, Arc2D.PIE);
+
+            double drawX = mapWidth / 2 + robotX - arcWidth / 2;
+            double drawY = mapHeight / 2 + robotY - arcWidth / 2;
+
+            Shape drawArc = new Arc2D.Double((int)drawX,(int)drawY, arcWidth, arcHeight, angle-22.5, 45, Arc2D.PIE);
             graph2.setColor(new Color(140,140,140,150));
+
             graph2.draw(drawArc);
             graph2.setColor(new Color(140,140,140,50));
             graph2.fillRect(this.getSize().width/2-robWidth/2 + x,this.getSize().height/2-robHeight/2 + y, robWidth, robHeight);
@@ -294,7 +339,7 @@ public class Gui extends JFrame{
             final int x1; 
             final int y1;
             final int x2;
-            final int y2;   
+            final int y2;
         
             public Line(int x1, int y1, int x2, int y2) {
                 this.x1 = x1;
@@ -472,7 +517,6 @@ public class Gui extends JFrame{
                                 e.getKeyCode() == KeyEvent.VK_RIGHT ){
                     prevAction = "";
                     if(connected){
-                        System.out.println("STOPPING!");
                         controller.action("stop");
                     }
                 } 
