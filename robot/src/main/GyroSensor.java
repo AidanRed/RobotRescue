@@ -30,7 +30,11 @@ public class GyroSensor
     public int getAngle()
     {
         try{
-            return (int) sp.fetchSample()[0];
+            int angle = (int) sp.fetchSample()[0];
+            if(angle < 0){
+                return 360 + angle;
+            }
+            return angle;
         }
         catch(RemoteException e){
             System.out.println("Error attempting to fetch gyroscope sample");

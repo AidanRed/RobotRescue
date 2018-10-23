@@ -144,13 +144,10 @@ public class Controller
         {
             // motor running
             double timepassed = Math.min(((double)(System.currentTimeMillis()-motor.timeStarted))/100d, ((double)updateDelay)/100d);
-            //System.out.println("timepassed: " + Double.toString(timepassed));
             double robotDistance = (Motor.CENT_PER_SEC * timepassed) * 10 * motor.direction;
-            //System.out.println(robotDistance);
             double theta = Math.toRadians(angle);
-            System.out.println("Angle: " + Integer.toString(angle) + " radians: " + Double.toString(theta));
-            int robotX = (int)(Math.cos(theta) * robotDistance);
-            int robotY = (int)(Math.sin(theta) * robotDistance);
+            int robotY = -(int)(Math.cos(theta) * robotDistance);
+            int robotX = -(int)(Math.sin(theta) * robotDistance);
             gui.incRobotPos(robotX,robotY);
         }
         displaySensorInformation();

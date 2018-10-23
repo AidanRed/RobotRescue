@@ -217,15 +217,13 @@ public class Gui extends JFrame{
         public void setPos(int xp, int yp){
             robotX = xp;
             robotY = yp;
+
             repaint();
         }
         public void incPos(int incX, int incY){
             robotX += incX;
             robotY += incY;
-
-            System.out.println("dx: " + Integer.toString(incX) + " dy: " + Integer.toString(incY));
-            System.out.println("New x: " + Integer.toString(robotX) + " New y: " + Integer.toString(robotY));
-
+            
             repaint();
         }
         public void point(int x, int y){
@@ -249,12 +247,6 @@ public class Gui extends JFrame{
 
         // renders visual map components
         public void paint(Graphics g){
-
-            /*
-            mapWidth = 
-            mapHeight = ;
-
-            setRobotPos(mapWidth / 2, mapHeight / 2);*/
             if(notSet){
                 mapWidth = mapArea.getSize().width;
                 mapHeight = mapArea.getSize().height;
@@ -273,8 +265,6 @@ public class Gui extends JFrame{
             }
             double drawX = mapWidth / 2 + robotX - 50;
             double drawY = mapHeight / 2 + robotY;
-            //System.out.println(drawX);
-            //System.out.println(drawY);
             Shape drawArc = new Arc2D.Double(drawX, drawY, 75, 50, angle-22.5, 45, Arc2D.PIE);
             graph2.draw(drawArc);
         }
