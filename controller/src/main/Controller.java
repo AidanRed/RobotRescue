@@ -125,21 +125,22 @@ public class Controller
         gui.setMapAngle(angle);
         color = colorSensor.detectColor();
         // Get reading from ultrasonic sensor and convert to centimetres
-        distance = ultraSensor.getDistance() * 100f;
+        distance = ultraSensor.getDistance() * 1000f;
         if(distance != Float.POSITIVE_INFINITY){
             double theta = Math.toRadians(ultraSensor.getAngle() + angle);
-            int dx = gui.getRobotX() + -(int)(Math.sin(theta) * distance);
-            int dy = gui.getRobotY() + -(int)(Math.cos(theta) * distance);
-            gui.addPoint(gui.getMapWidth() / 2 + dx, gui.getMapHeight() / 2 + dy);
+            double dx = gui.getRobotX() + -(Math.sin(theta) * distance);
+            double dy = gui.getRobotY() + -(Math.cos(theta) * distance);
+            gui.addPoint(gui.getMapWidth() / 2 + (int)dx, gui.getMapHeight() / 2 + (int)dy);
         }
         if(motor.timeStarted>motor.timeStopped)
         {
             // motor running
-            double timepassed = Math.min(((double)(System.currentTimeMillis()-motor.timeStarted))/100d, ((double)updateDelay)/100d);
-            double robotDistance = (Motor.CENT_PER_SEC * timepassed) * 10 * motor.direction;
+            double startExtra = (System.currentTimeMillis()-motor.timeStarted)/100d;
+            double timepassed = Math.min(startExtra, ((double)updateDelay)/100d);
+            double robotDistance = (Motor.CENT_PER_SEC * timepassed) * 10d * (double)motor.direction;
             double theta = Math.toRadians(angle);
-            int robotY = -(int)(Math.cos(theta) * robotDistance);
-            int robotX = -(int)(Math.sin(theta) * robotDistance);
+            double robotY = -(Math.cos(theta) * robotDistance);
+            double robotX = -(Math.sin(theta) * robotDistance);
             gui.incRobotPos(robotX,robotY);
         }
         displaySensorInformation();

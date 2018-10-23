@@ -36,6 +36,15 @@ public class Motor
         this.ev3 = ev3;
         motorLeft = RobotUtility.getLeftMotor(ev3);
         motorRight = RobotUtility.getRightMotor(ev3);
+
+        try{
+            motorLeft.setSpeed(ROT_SPEED);
+            motorRight.setSpeed(ROT_SPEED);
+        }
+        catch(RemoteException e){
+            System.out.println("Error failed to set motor speed");
+        }
+
         timeStarted = 0L;
         timeStopped = 1L;
     }
@@ -47,8 +56,7 @@ public class Motor
             direction = 1;
             motorLeft.forward();
             motorRight.forward();
-            motorLeft.setSpeed(180);
-            motorRight.setSpeed(180);
+            
             timeStarted = System.currentTimeMillis();
             //motorLeft.rotate(1,true);
             //motorRight.rotate(1,false);
@@ -66,8 +74,6 @@ public class Motor
             direction = -1;
             motorLeft.backward();
             motorRight.backward();
-            motorLeft.setSpeed(180);
-            motorRight.setSpeed(180);
             timeStarted = System.currentTimeMillis();
         }
         catch(RemoteException e)
@@ -82,8 +88,6 @@ public class Motor
         {
             motorRight.forward();
             motorLeft.backward();
-            motorLeft.setSpeed(180);
-            motorRight.setSpeed(180);
             //timeStarted = System.currentTimeMillis();
         }
         catch(RemoteException e)
@@ -98,8 +102,6 @@ public class Motor
         {
             motorRight.backward();
             motorLeft.forward();
-            motorLeft.setSpeed(180);
-            motorRight.setSpeed(180);
             //timeStarted = System.currentTimeMillis();
         }
         catch(RemoteException e)

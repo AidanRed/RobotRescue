@@ -83,7 +83,7 @@ public class Gui extends JFrame{
 
     //initializes GUI and its elements
     public Gui(){
-        this.setSize(1000,500);
+        this.setSize(1920,1080);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setTitle("Robot Controller");
@@ -166,11 +166,11 @@ public class Gui extends JFrame{
         mapArea.setAngle(a+90);
     }
     // sets position of robot in map
-    public void setRobotPos(int x, int y){
+    public void setRobotPos(double x, double y){
         mapArea.setPos(x, y);
     }
     // increments robot's x and y by given increments 0,0 is center screen
-    public void incRobotPos(int incX, int incY){
+    public void incRobotPos(double incX, double incY){
         mapArea.incPos(incX, incY);
     }
     // add a point to the map at given coords
@@ -198,19 +198,19 @@ public class Gui extends JFrame{
         return mapArea.mapHeight;
     }
 
-    public int getRobotX(){
+    public double getRobotX(){
         return mapArea.getRobotX();
     }
 
-    public int getRobotY(){
+    public double getRobotY(){
         return mapArea.getRobotY();
     }
 
     // canvas for the map area
     private class Map extends JComponent{
         private int angle = 0;
-        private int robotX;
-        private int robotY;
+        private double robotX;
+        private double robotY;
         private List<Point> points = new ArrayList<Point>();
         private int pointSize = 2;
         private List<Line> lines = new ArrayList<Line>();
@@ -222,19 +222,19 @@ public class Gui extends JFrame{
             angle = a;
             repaint();
         }
-        public void setPos(int xp, int yp){
+        public void setPos(double xp, double yp){
             robotX = xp;
             robotY = yp;
 
             repaint();
         }
-        public int getRobotX(){
+        public double getRobotX(){
             return robotX;
         }
-        public int getRobotY(){
+        public double getRobotY(){
             return robotY;
         }
-        public void incPos(int incX, int incY){
+        public void incPos(double incX, double incY){
             robotX += incX;
             robotY += incY;
             
@@ -277,9 +277,9 @@ public class Gui extends JFrame{
             for (Point point : points) {
                 graph2.drawOval(point.x, point.y, pointSize, pointSize);
             }
-            double drawX = mapWidth / 2 + robotX - 50;
-            double drawY = mapHeight / 2 + robotY;
-            Shape drawArc = new Arc2D.Double(drawX, drawY, 50, 50, angle-22.5, 45, Arc2D.PIE);
+            double drawX = mapWidth / 2 + robotX - 25;
+            double drawY = mapHeight / 2 + robotY - 25;
+            Shape drawArc = new Arc2D.Double((int)drawX, (int)drawY, 50, 50, angle-22.5, 45, Arc2D.PIE);
             graph2.draw(drawArc);
         }
 
