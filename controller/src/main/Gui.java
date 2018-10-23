@@ -13,6 +13,9 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.ButtonModel;
+import javax.swing.SwingUtilities;
+
+import java.lang.Runnable;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -186,18 +189,6 @@ public class Gui extends JFrame{
     public void clearLines(){
         mapArea.clearL();
     }
-    public int getX(){
-        if(mapArea != null){
-            return mapArea.getX();
-        }
-        return 0;
-    }
-    public int getY(){
-        if(mapArea != null){
-            return mapArea.getY();
-        }
-        return 0;
-    }
 
     public int getMapWidth(){
         return mapArea.mapWidth;
@@ -210,8 +201,8 @@ public class Gui extends JFrame{
     // canvas for the map area
     private class Map extends JComponent{
         private int angle = 0;
-        private int x;
-        private int y;
+        private int robotX;
+        private int robotY;
         private List<Point> points = new ArrayList<Point>();
         private int pointSize = 2;
         private List<Line> lines = new ArrayList<Line>();
@@ -224,13 +215,17 @@ public class Gui extends JFrame{
             repaint();
         }
         public void setPos(int xp, int yp){
-            x = xp;
-            y = yp;
+            robotX = xp;
+            robotY = yp;
             repaint();
         }
         public void incPos(int incX, int incY){
-            x += incX;
-            y += incY;
+            robotX += incX;
+            robotY += incY;
+
+            System.out.println("dx: " + Integer.toString(incX) + " dy: " + Integer.toString(incY));
+            System.out.println("New x: " + Integer.toString(robotX) + " New y: " + Integer.toString(robotY));
+
             repaint();
         }
         public void point(int x, int y){
@@ -250,12 +245,6 @@ public class Gui extends JFrame{
         public void clearL(){
             lines.clear();
             repaint();
-        }
-        public int getX(){
-            return x;
-        }
-        public int getY(){
-            return y;
         }
 
         // renders visual map components
@@ -282,7 +271,11 @@ public class Gui extends JFrame{
             for (Point point : points) {
                 graph2.drawOval(point.x, point.y, pointSize, pointSize);
             }
-            Shape drawArc = new Arc2D.Double(mapWidth / 2 + x - 50, mapHeight / 2 + y - 50, 100, 100, angle-20, 40, Arc2D.PIE);
+            double drawX = mapWidth / 2 + robotX - 50;
+            double drawY = mapHeight / 2 + robotY;
+            //System.out.println(drawX);
+            //System.out.println(drawY);
+            Shape drawArc = new Arc2D.Double(drawX, drawY, 75, 50, angle-22.5, 45, Arc2D.PIE);
             graph2.draw(drawArc);
         }
 

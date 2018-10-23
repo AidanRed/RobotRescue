@@ -18,22 +18,33 @@ public class Motor
     RMIRegulatedMotor motorLeft;
     RMIRegulatedMotor motorRight;
 
+    public static final int ROT_SPEED = 180;
+    // Centimetres moved from one rotation of the wheel
+    public static final double ROTATION_DIST = 18.22;
+    // Centimetres per second movement speed
+    //public static final double CENT_PER_SEC = ((double)ROT_SPEED / 360) * ROTATION_DIST; 
+    public static final double CENT_PER_SEC = 9.11; 
+
+    public int direction = 1;
     public Long timeStarted;
     public Long timeStopped;
+
+    
 
     public void connect(RemoteEV3 ev3)
     {
         this.ev3 = ev3;
         motorLeft = RobotUtility.getLeftMotor(ev3);
         motorRight = RobotUtility.getRightMotor(ev3);
-        timeStarted = System.currentTimeMillis();
-        timeStopped = System.currentTimeMillis();
+        timeStarted = 0L;
+        timeStopped = 1L;
     }
 
     public void moveForward()
     {
         try
         {
+            direction = 1;
             motorLeft.forward();
             motorRight.forward();
             motorLeft.setSpeed(180);
@@ -52,6 +63,7 @@ public class Motor
     {
         try
         {
+            direction = -1;
             motorLeft.backward();
             motorRight.backward();
             motorLeft.setSpeed(180);
@@ -72,7 +84,7 @@ public class Motor
             motorLeft.backward();
             motorLeft.setSpeed(180);
             motorRight.setSpeed(180);
-            timeStarted = System.currentTimeMillis();
+            //timeStarted = System.currentTimeMillis();
         }
         catch(RemoteException e)
         {
@@ -88,7 +100,7 @@ public class Motor
             motorLeft.forward();
             motorLeft.setSpeed(180);
             motorRight.setSpeed(180);
-            timeStarted = System.currentTimeMillis();
+            //timeStarted = System.currentTimeMillis();
         }
         catch(RemoteException e)
         {
@@ -102,7 +114,9 @@ public class Motor
         {
             motorLeft.stop(true);
             motorRight.stop(true);
-            timeStopped = System.currentTimeMillis();
+            if(timeStarted > timeStopped){
+                timeStopped = System.currentTimeMillis();
+            }
         }
         catch(RemoteException e){
             System.out.println("Error attempting to stop motor");

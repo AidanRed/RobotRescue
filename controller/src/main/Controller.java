@@ -132,9 +132,10 @@ public class Controller
         angle = gyroSensor.getAngle();
         gui.setMapAngle(angle);
         color = colorSensor.detectColor();
+        // Get reading from ultrasonic sensor and convert to centimetres
         distance = ultraSensor.getDistance() * 100f;
         if(distance != Float.POSITIVE_INFINITY){
-            double theta = Math.toRadians((ultraSensor.getAngle() + angle) - 90);
+            double theta = Math.toRadians(ultraSensor.getAngle() + angle);
             int dx = (int)(Math.cos(theta) * distance);
             int dy = (int)(Math.sin(theta) * distance);
             gui.addPoint(gui.getMapWidth() / 2 + dx, gui.getMapHeight() / 2 + dy);
@@ -142,9 +143,12 @@ public class Controller
         if(motor.timeStarted>motor.timeStopped)
         {
             // motor running
-            double timepassed = Math.min(motor.timeStopped-motor.timeStarted, updateDelay);
-            double robotDistance = 180.0 * timepassed;
+            double timepassed = Math.min(((double)(System.currentTimeMillis()-motor.timeStarted))/100d, ((double)updateDelay)/100d);
+            //System.out.println("timepassed: " + Double.toString(timepassed));
+            double robotDistance = (Motor.CENT_PER_SEC * timepassed) * 10 * motor.direction;
+            //System.out.println(robotDistance);
             double theta = Math.toRadians(angle);
+            System.out.println("Angle: " + Integer.toString(angle) + " radians: " + Double.toString(theta));
             int robotX = (int)(Math.cos(theta) * robotDistance);
             int robotY = (int)(Math.sin(theta) * robotDistance);
             gui.incRobotPos(robotX,robotY);
@@ -156,7 +160,7 @@ public class Controller
     {
         if(connected == true)
         {
-            gui.setText("COLOR: " + color + " Angle: " + Integer.toString(angle) + " Distance: " + Float.toString(distance)); // TODO: update distance displaying to pop entries and display on map
+            gui.setText("Colour: " + color + " Angle: " + Integer.toString(angle) + " Distance: " + Float.toString(distance)); // TODO: update distance displaying to pop entries and display on map
         }
     }
 
