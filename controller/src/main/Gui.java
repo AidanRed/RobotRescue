@@ -225,14 +225,6 @@ public class Gui extends JFrame{
         mapArea.clearL();
     }
 
-    public int getMapWidth(){
-        return mapArea.mapWidth;
-    }
-
-    public int getMapHeight(){
-        return mapArea.mapHeight;
-    }
-
     public double getRobotX(){
         return mapArea.getRobotX();
     }
@@ -249,17 +241,29 @@ public class Gui extends JFrame{
         private double robotY;
         
         // Width and height of vision arc if it were a full ellipse
-        private int arcWidth = 50;
-        private int arcHeight = 50;
+        private final int arcWidth = 50;
+        private final int arcHeight = 50;
+
+        private final int halfArcWidth = arcWidth / 2;
+        private final int halfArcHeight = arcHeight / 2;
+
         // Width and height of rectangle representing robot
         private int robWidth = 20;
         private int robHeight = 30;
 
+        private final int halfRobWidth = robWidth / 2;
+        private final int halfRobHeight = robHeight / 2;
+
         private List<Point> points = new ArrayList<Point>();
         private int pointSize = 2;
         private List<Line> lines = new ArrayList<Line>();
+
         public int mapWidth;
         public int mapHeight;
+
+        public int halfMapWidth;
+        public int halfMapHeight;
+
         private boolean notSet = true;
 
         public void setAngle(int a){
@@ -308,6 +312,10 @@ public class Gui extends JFrame{
             if(notSet){
                 mapWidth = mapArea.getSize().width;
                 mapHeight = mapArea.getSize().height;
+
+                halfMapWidth = mapWidth / 2;
+                halfMapHeight = mapHeight / 2;
+
                 notSet = false;
             }
             
@@ -322,17 +330,17 @@ public class Gui extends JFrame{
                 graph2.drawOval(point.x, point.y, pointSize, pointSize);
             }
 
-            double drawX = mapWidth / 2 + robotX - arcWidth / 2;
-            double drawY = mapHeight / 2 + robotY - arcWidth / 2;
+            double drawX = (halfMapWidth + robotX);
+            double drawY = (halfMapHeight + robotY);
 
-            Shape drawArc = new Arc2D.Double((int)drawX,(int)drawY, arcWidth, arcHeight, angle-22.5, 45, Arc2D.PIE);
+            Shape drawArc = new Arc2D.Double(drawX,drawY, arcWidth, arcHeight, angle-22.5, 45, Arc2D.PIE);
             graph2.setColor(new Color(140,140,140,150));
 
             graph2.draw(drawArc);
             graph2.setColor(new Color(140,140,140,50));
-            graph2.fillRect(this.getSize().width/2-robWidth/2 + x,this.getSize().height/2-robHeight/2 + y, robWidth, robHeight);
+            graph2.fillRect((int)(halfMapWidth + halfRobWidth + robotX), (int)(halfMapHeight + halfRobHeight + robotY), robWidth, robHeight);
             graph2.setColor(new Color(0,0,0));
-            graph2.drawRect(this.getSize().width/2-robWidth/2 + x,this.getSize().height/2-robHeight/2 + y, robWidth, robHeight);
+            graph2.drawRect((int)(halfMapWidth + halfRobWidth + robotX), (int)(halfMapHeight + halfRobHeight + robotY), robWidth, robHeight);
         }
 
         private class Line{
