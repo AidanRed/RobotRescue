@@ -39,6 +39,8 @@ import java.awt.RenderingHints;
 import java.awt.Point;
 
 import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -152,6 +154,21 @@ public class Gui extends JFrame{
 
                 mapArea = new Map();
                 panel.add(mapArea, BorderLayout.CENTER);
+                mapArea.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e){
+                        int theX = e.getX();
+                        int theY = e.getY();
+                        System.out.println("Adding destination at: (" + Integer.toString(theX) + ", " + Integer.toString(theY) +")");
+                        //nav.addDestination(theX, theY);
+                        repaint();
+                    }
+                    @Override
+                    public void mouseExited(MouseEvent e){}
+                    public void mouseEntered(MouseEvent e){}
+                    public void mouseReleased(MouseEvent e){}
+                    public void mousePressed(MouseEvent e){}
+                });
 
                 logArea = new JTextArea();
                 scrollPane = new JScrollPane(logArea);
@@ -348,6 +365,14 @@ public class Gui extends JFrame{
             graph2.draw(drawArc);
             graph2.rotate(Math.toRadians((angle)));
             graph2.translate(-(halfMapWidth + robotX), -(halfMapHeight + robotY));
+
+            if(nav.currentPath != null){
+                for(AStar.Point p : nav.currentPath){
+                    System.out.println("Point at: " + Integer.toString(p.x) + " " + Integer.toString(p.y));
+                    int[] coords = nav.gridToPoint(p.x, p.y);
+                    graph2.drawRect(coords[0] + halfMapWidth, coords[1] + halfMapWidth, (int)nav.cellSize, (int)nav.cellSize);
+                }
+            }
         }
 
         private class Line{

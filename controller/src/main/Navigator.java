@@ -55,16 +55,19 @@ public class Navigator{
         if(gridX < 0 || gridY < 0 || gridX > gridSize || gridY > gridSize){
             //Don't add point
         } else{
-            points.add(p);
+            /*
+            if(world.data[gridX][gridY] < world.SOLID_THRESHOLD){
+                points.add(p);
+            }*/
             world.data[gridX][gridY] += 1;
         }
     }
 
     public void addDestination(int x, int y){
         int[] d = pointToGrid(x, y);
-        int[] s = pointToGrid((int)gui.getRobotX(), (int)gui.getRobotY());
-
-        currentPath = AStar.astar(new AStar.Point(s[0], s[1]), new AStar.Point(s[0], s[1]), world);
+        int[] s = pointToGrid((int)gui.getRobotX()+gui.getMapWidth()/2, (int)gui.getRobotY()+gui.getMapHeight()/2);
+        
+        currentPath = AStar.astar(new AStar.Point(s[0], s[1]), new AStar.Point(d[0], d[1]), world);
     }
 
     public int[] pointToGrid(int x, int y){
@@ -74,6 +77,12 @@ public class Navigator{
         int[] gridCoords = {gridX, gridY};
 
         return gridCoords;
+    }
+
+    public int[] gridToPoint(int x, int y){
+        int[] coords = {x*gridSize, y*gridSize};
+
+        return coords;
     }
 
     public void clearPoints(){

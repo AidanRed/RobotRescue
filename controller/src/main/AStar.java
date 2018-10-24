@@ -38,7 +38,7 @@ public class AStar
         int height;
 
         // The number of points in a cell for it to be solid
-        static final int SOLID_THRESHOLD = 2;
+        static final int SOLID_THRESHOLD = 1;
 
         public World(int w, int h)
         {
@@ -145,6 +145,7 @@ public class AStar
             if(!parent.containsKey(point))
             {   
                 pathFound = false;
+                System.out.println("Failed to find path");
                 break;
             }
             else
