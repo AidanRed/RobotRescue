@@ -24,7 +24,7 @@ public class Main
 
         //Construct the display
         Gui gui = new Gui();
-        Navigator nav = new Navigator(100, 10);
+        Navigator nav = new Navigator(gui, 100, 10);
 
         //Connect the components together
         gui.init(controller, nav);

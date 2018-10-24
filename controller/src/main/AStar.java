@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class AStar
 {
-    public class Point
+    public static class Point
     {
         public int x;
         public int y;
@@ -19,7 +19,7 @@ public class AStar
         }
     }
 
-    public class PointPriority
+    public static class PointPriority
     {
         public Point point;
         public int priority;
@@ -31,11 +31,15 @@ public class AStar
         }
     }
 
-    public class World
+    public static class World
     {
         int[][] data;
         int width;
         int height;
+
+        // The number of points in a cell for it to be solid
+        static final int SOLID_THRESHOLD = 2;
+
         public World(int w, int h)
         {
             width = w;
@@ -56,7 +60,7 @@ public class AStar
 
         public boolean is_empty(Point point)
         {
-            if(data[point.y][point.x] == 0)
+            if(data[point.y][point.x] < SOLID_THRESHOLD)
             {
                 return true;
             }
@@ -87,12 +91,12 @@ public class AStar
         }
     }
 
-    public int cartesian_distance(Point pos1, Point pos2)
+    public static int cartesian_distance(Point pos1, Point pos2)
     {
         return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y);
     }
 
-    public ArrayList<Point> astar(Point start, Point end, World world)
+    public static ArrayList<Point> astar(Point start, Point end, World world)
     {
          Comparator<PointPriority> pointPriorityComparator = new Comparator<PointPriority>() {
             @Override
