@@ -44,7 +44,7 @@ public class UltrasonicSensor
 
         new Thread(new Runnable(){
             public void run(){
-                //updateMotor();
+                updateMotor();
             }
         }).start();
     }
