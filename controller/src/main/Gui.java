@@ -226,6 +226,14 @@ public class Gui extends JFrame{
     public void clearLines(){
         mapArea.clearL();
     }
+    // add a person to the map at given coords with specified colour (RED, GREEN, or BLUE)
+    public void addPerson(int x, int y, String color){
+        if(color.equals("RED") || color.equals("GREEN") || color.equals("BLUE")){
+            mapArea.person(x, y, color);
+        } else {
+            System.err.println("Invalid color given for person, should be RED, GREEN, or BLUE");
+        }
+    }
 
     public double getRobotX(){
         return mapArea.getRobotX();
@@ -258,6 +266,8 @@ public class Gui extends JFrame{
 
         private List<Point> points = new ArrayList<Point>();
         private int pointSize = 2;
+        private List<Person> persons = new ArrayList<Person>();
+        private int personSize = 40;
         private List<Line> lines = new ArrayList<Line>();
 
         public int mapWidth;
@@ -288,6 +298,11 @@ public class Gui extends JFrame{
             robotX += incX;
             robotY += incY;
             
+            repaint();
+        }
+        public void person(int x, int y, String color){
+            Person p = new Person(x, y, color);
+            persons.add(p);
             repaint();
         }
         public void point(int x, int y){
@@ -331,6 +346,24 @@ public class Gui extends JFrame{
             for (Point point : points) {
                 graph2.drawRect(point.x, point.y, pointSize, pointSize);
             }
+            for (Person person : persons) {
+                int personW = personSize/2;
+                int headSize = personSize/5;
+                graph2.setColor(person.color);
+                graph2.fillOval(person.x+personW/2-headSize/2-personW/2, -personSize/2+person.y, headSize, headSize);
+                graph2.fillRect(person.x+personW/4-personW/2, -personSize/2+person.y+personSize/5, personW/2, personSize/5*2);
+                graph2.fillRect(person.x-personW/2, -personSize/2+person.y+personSize/5, personW/4, personSize/4);
+                graph2.fillRect(person.x+personW/4*3-personW/2, -personSize/2+person.y+personSize/5, personW/4, personSize/4);
+                graph2.fillRect(person.x+personW/4-personW/2, -personSize/2+person.y+personSize/5*3, personW/4, personSize/4);
+                graph2.fillRect(person.x+personW/2-personW/2, -personSize/2+person.y+personSize/5*3, personW/4, personSize/4);
+                graph2.setColor(new Color(0,0,0));
+                graph2.drawOval(person.x+personW/2-headSize/2-personW/2, -personSize/2+person.y, headSize, headSize);
+                graph2.drawRect(person.x+personW/4-personW/2, -personSize/2+person.y+personSize/5, personW/2, personSize/5*2);
+                graph2.drawRect(person.x-personW/2, -personSize/2+person.y+personSize/5, personW/4, personSize/4);
+                graph2.drawRect(person.x+personW/4*3-personW/2, -personSize/2+person.y+personSize/5, personW/4, personSize/4);
+                graph2.drawRect(person.x+personW/4-personW/2, -personSize/2+person.y+personSize/5*3, personW/4, personSize/4);
+                graph2.drawRect(person.x+personW/2-personW/2, -personSize/2+person.y+personSize/5*3, personW/4, personSize/4);
+            }
 
             double drawX = -halfArcWidth;
             double drawY = -halfArcHeight;
@@ -362,6 +395,30 @@ public class Gui extends JFrame{
                 this.x2 = x2;
                 this.y2 = y2;
             }               
+        }
+        private class Person{
+            final int x; 
+            final int y;
+            final Color color; 
+        
+            public Person(int x, int y, String color) {
+                this.x = x;
+                this.y = y;
+                switch(color){
+                    case "RED":
+                        this.color = new Color(240,20,20);
+                        break;
+                    case "GREEN":
+                        this.color = new Color(20,240,20);
+                        break;
+                    case "BLUE":
+                        this.color = new Color(20,20,240);
+                        break;
+                    default:
+                        System.err.println("Invalid color given to Color constructor");
+                        this.color = null;
+                }
+            }
         }
     }
 
