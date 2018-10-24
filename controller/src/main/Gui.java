@@ -292,7 +292,7 @@ public class Gui extends JFrame{
         }
         public void point(int x, int y){
             Point p = new Point(x, y);
-            points.add(p);
+            nav.addPoint(p);
             repaint();
         }
         public void line(int x1, int y1, int x2, int y2){
@@ -301,7 +301,7 @@ public class Gui extends JFrame{
             repaint();
         }
         public void clearP(){
-            points.clear();
+            nav.clearPoints();
             repaint();
         }
         public void clearL(){
@@ -328,7 +328,7 @@ public class Gui extends JFrame{
             for (Line line : lines) {
                 graph2.drawLine(line.x1, line.y1, line.x2, line.y2);
             }
-            for (Point point : points) {
+            for (Point point : nav.getPoints()) {
                 graph2.drawRect(point.x, point.y, pointSize, pointSize);
             }
 

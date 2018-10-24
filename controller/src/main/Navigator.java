@@ -57,10 +57,6 @@ public class Navigator{
         int gridX = x % gridSize;
         int gridY = y % gridSize;
 
-        // Add half the gridSize because robot is offset
-        gridX += halfGrid;
-        gridY += halfGrid;
-
         int[] gridCoords = {gridX, gridY};
 
         return gridCoords;
