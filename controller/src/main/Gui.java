@@ -37,6 +37,7 @@ import java.awt.AlphaComposite;
 import java.awt.Shape;
 import java.awt.RenderingHints;
 import java.awt.Point;
+import java.awt.BasicStroke;
 
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
@@ -243,6 +244,18 @@ public class Gui extends JFrame{
     public void clearLines(){
         mapArea.clearL();
     }
+    // clear all persons on the map
+    public void clearPersons(){
+        mapArea.clearPersons();
+    }
+    // add a person to the map at given coords with specified colour (RED, GREEN, or BLUE)
+    public void addPerson(int x, int y, String color){
+        if(color.equals("RED") || color.equals("GREEN") || color.equals("BLUE")){
+            mapArea.person(x, y, color);
+        } else {
+            System.err.println("Invalid color given for person, should be RED, GREEN, or BLUE");
+        }
+    }
 
     public double getRobotX(){
         return mapArea.getRobotX();
@@ -275,6 +288,8 @@ public class Gui extends JFrame{
 
         private List<Point> points = new ArrayList<Point>();
         private int pointSize = 2;
+        private List<Person> persons = new ArrayList<Person>();
+        private int personSize = 40;
         private List<Line> lines = new ArrayList<Line>();
 
         public int mapWidth;
@@ -307,13 +322,18 @@ public class Gui extends JFrame{
             
             repaint();
         }
+        public void person(int x, int y, String color){
+            Person p = new Person(x+halfMapWidth, y+halfMapHeight, color);
+            persons.add(p);
+            repaint();
+        }
         public void point(int x, int y){
             Point p = new Point(x, y);
             nav.addPoint(p);
             repaint();
         }
         public void line(int x1, int y1, int x2, int y2){
-            Line l = new Line(x1, y1, x2, y2);
+            Line l = new Line(x1+halfMapWidth, y1+halfMapHeight, x2+halfMapWidth, y2+halfMapHeight);
             lines.add(l);
             repaint();
         }
@@ -323,6 +343,10 @@ public class Gui extends JFrame{
         }
         public void clearL(){
             lines.clear();
+            repaint();
+        }
+        public void clearPersons(){
+            persons.clear();
             repaint();
         }
 
@@ -343,10 +367,30 @@ public class Gui extends JFrame{
             graph2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             
             for (Line line : lines) {
+                graph2.setStroke(new BasicStroke(3));
                 graph2.drawLine(line.x1, line.y1, line.x2, line.y2);
+                graph2.setStroke(new BasicStroke(1));
             }
             for (Point point : nav.getPoints()) {
                 graph2.drawRect(point.x, point.y, pointSize, pointSize);
+            }
+            for (Person person : persons) {
+                int personW = personSize/2;
+                int headSize = personSize/5;
+                graph2.setColor(person.color);
+                graph2.fillOval(person.x+personW/2-headSize/2-personW/2, -personSize/2+person.y, headSize, headSize);
+                graph2.fillRect(person.x+personW/4-personW/2, -personSize/2+person.y+personSize/5, personW/2, personSize/5*2);
+                graph2.fillRect(person.x-personW/2, -personSize/2+person.y+personSize/5, personW/4, personSize/4);
+                graph2.fillRect(person.x+personW/4*3-personW/2, -personSize/2+person.y+personSize/5, personW/4, personSize/4);
+                graph2.fillRect(person.x+personW/4-personW/2, -personSize/2+person.y+personSize/5*3, personW/4, personSize/4);
+                graph2.fillRect(person.x+personW/2-personW/2, -personSize/2+person.y+personSize/5*3, personW/4, personSize/4);
+                graph2.setColor(new Color(0,0,0));
+                graph2.drawOval(person.x+personW/2-headSize/2-personW/2, -personSize/2+person.y, headSize, headSize);
+                graph2.drawRect(person.x+personW/4-personW/2, -personSize/2+person.y+personSize/5, personW/2, personSize/5*2);
+                graph2.drawRect(person.x-personW/2, -personSize/2+person.y+personSize/5, personW/4, personSize/4);
+                graph2.drawRect(person.x+personW/4*3-personW/2, -personSize/2+person.y+personSize/5, personW/4, personSize/4);
+                graph2.drawRect(person.x+personW/4-personW/2, -personSize/2+person.y+personSize/5*3, personW/4, personSize/4);
+                graph2.drawRect(person.x+personW/2-personW/2, -personSize/2+person.y+personSize/5*3, personW/4, personSize/4);
             }
 
             double drawX = -halfArcWidth;
@@ -387,6 +431,30 @@ public class Gui extends JFrame{
                 this.x2 = x2;
                 this.y2 = y2;
             }               
+        }
+        private class Person{
+            final int x; 
+            final int y;
+            final Color color; 
+        
+            public Person(int x, int y, String color) {
+                this.x = x;
+                this.y = y;
+                switch(color){
+                    case "RED":
+                        this.color = new Color(240,20,20);
+                        break;
+                    case "GREEN":
+                        this.color = new Color(20,240,20);
+                        break;
+                    case "BLUE":
+                        this.color = new Color(20,20,240);
+                        break;
+                    default:
+                        System.err.println("Invalid color given to Color constructor");
+                        this.color = null;
+                }
+            }
         }
     }
 
@@ -429,6 +497,7 @@ public class Gui extends JFrame{
                         }if(model == bClear.getModel()){
                             clearLines();
                             clearPoints();
+                            clearPersons();
                         }
                     } catch (Exception ex){
                         System.out.println(ex);
@@ -474,6 +543,12 @@ public class Gui extends JFrame{
                             }
                             break;
                         case KeyEvent.VK_Z:
+
+                            addPerson(getMapWidth()/8,getMapHeight()/8, "RED");
+                            addPerson(getMapWidth()/8*3,getMapHeight()/8*3, "GREEN");
+                            addPerson(getMapWidth()/8*5,getMapHeight()/8*5, "BLUE");
+                            addPerson(getMapWidth()/8*7,getMapHeight()/8*7, "RED");
+
                             addPoint(0,0);
                             addPoint(10,10);
                             addPoint(20,20);
@@ -518,6 +593,7 @@ public class Gui extends JFrame{
                         case KeyEvent.VK_X:
                             clearLines();
                             clearPoints();
+                            clearPersons();
                             break;
                             
                         case KeyEvent.VK_UP:
