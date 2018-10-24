@@ -33,7 +33,10 @@ public class Controller
     ColorSensor colorSensor;
     GyroSensor gyroSensor;
     UltrasonicSensor ultraSensor;
+    
     Gui gui;
+    Navigator nav;
+
     boolean connected = false;
 
     String lastDisplayText = "";
@@ -44,15 +47,15 @@ public class Controller
 
     String color = "NONE";
 
-    public void init(Gui gui)
+    public void init(Gui gui, Navigator nav)
     {
         this.gui = gui;
+        this.nav = nav;
+
         motor = new Motor();
         colorSensor = new ColorSensor();
         gyroSensor = new GyroSensor();
         ultraSensor = new UltrasonicSensor();
-
-        //distances = new ArrayList<>();
     }
 
     public void connect() throws RemoteException, MalformedURLException, NotBoundException
@@ -121,29 +124,31 @@ public class Controller
     }
 
     private void update(){
-        angle = gyroSensor.getAngle();
-        gui.setMapAngle(angle);
-        color = colorSensor.detectColor();
-        // Get reading from ultrasonic sensor and convert to centimetres
-        distance = ultraSensor.getDistance() * 1000f;
-        if(distance != Float.POSITIVE_INFINITY){
-            double theta = Math.toRadians(ultraSensor.getAngle() + angle);
-            double dx = gui.getRobotX() + -(Math.sin(theta) * distance);
-            double dy = gui.getRobotY() + -(Math.cos(theta) * distance);
-            gui.addPoint(gui.getMapWidth() / 2 + (int)dx, gui.getMapHeight() / 2 + (int)dy);
+        if(connected){
+            angle = gyroSensor.getAngle();
+            gui.setMapAngle(angle);
+            color = colorSensor.detectColor();
+            // Get reading from ultrasonic sensor and convert to centimetres
+            distance = ultraSensor.getDistance() * 1000f;
+            if(distance != Float.POSITIVE_INFINITY){
+                double theta = Math.toRadians(ultraSensor.getAngle() + angle);
+                double dx = gui.getRobotX() + -(Math.sin(theta) * distance);
+                double dy = gui.getRobotY() + -(Math.cos(theta) * distance);
+                gui.addPoint(gui.getMapWidth() / 2 + (int)dx, gui.getMapHeight() / 2 + (int)dy);
+            }
+            if(motor.timeStarted>motor.timeStopped)
+            {
+                // motor running
+                double startExtra = (System.currentTimeMillis()-motor.timeStarted)/100d;
+                double timepassed = Math.min(startExtra, ((double)updateDelay)/100d);
+                double robotDistance = (Motor.CENT_PER_SEC * timepassed) * 10d * (double)motor.direction;
+                double theta = Math.toRadians(angle);
+                double robotY = -(Math.cos(theta) * robotDistance);
+                double robotX = -(Math.sin(theta) * robotDistance);
+                gui.incRobotPos(robotX,robotY);
+            }
+            displaySensorInformation();
         }
-        if(motor.timeStarted>motor.timeStopped)
-        {
-            // motor running
-            double startExtra = (System.currentTimeMillis()-motor.timeStarted)/100d;
-            double timepassed = Math.min(startExtra, ((double)updateDelay)/100d);
-            double robotDistance = (Motor.CENT_PER_SEC * timepassed) * 10d * (double)motor.direction;
-            double theta = Math.toRadians(angle);
-            double robotY = -(Math.cos(theta) * robotDistance);
-            double robotX = -(Math.sin(theta) * robotDistance);
-            gui.incRobotPos(robotX,robotY);
-        }
-        displaySensorInformation();
     }
 
     public void displaySensorInformation()
