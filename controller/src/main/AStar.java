@@ -3,6 +3,7 @@ import java.util.PriorityQueue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class AStar
 {
@@ -10,13 +11,23 @@ public class AStar
     {
         public int x;
         public int y;
-        public int priority;
 
         public Point(int x, int y)
         {
             this.x = x;
             this.y = y;
-            this.priority = 0;
+        }
+    }
+
+    public class PointPriority
+    {
+        public Point point;
+        public int priority;
+
+        public PointPriority(Point point,int priority)
+        {
+            this.point = point;
+            this.priority = priority;
         }
     }
 
@@ -34,7 +45,7 @@ public class AStar
 
         public boolean point_inside(Point point)
         {
-            if((0 <= point.x < this.width) && (0 <= point.y < this.height))
+            if((0 <= point.x && point.x < this.width) && (0 <= point.y && point.y < this.height))
             {
                 return true;
             }
@@ -55,7 +66,7 @@ public class AStar
 
         public ArrayList<Point> neighbours(Point point)
         {
-            potentialPoints = new ArrayList<Point>(4);
+            ArrayList<Point> potentialPoints = new ArrayList<Point>(4);
             potentialPoints.set(0,new Point(point.x-1,point.y)); 
             potentialPoints.set(1,new Point(point.x+1,point.y)); 
             potentialPoints.set(2,new Point(point.x,point.y+1)); 
@@ -78,28 +89,28 @@ public class AStar
 
     public int cartesian_distance(Point pos1, Point pos2)
     {
-        return Math.abs(pos1.x - pos2.x) + abs(pos1.y - pos2.y);
+        return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y);
     }
 
-    public void astar(Point start, Point end, World world)
+    public ArrayList<Point> astar(Point start, Point end, World world)
     {
-         Comparator<Point> pointPriorityComparator = new Comparator<Point>() {
+         Comparator<PointPriority> pointPriorityComparator = new Comparator<PointPriority>() {
             @Override
-            public int compare(Point p1, Point p2) {
+            public int compare(PointPriority p1, PointPriority p2) {
                 return p1.priority - p2.priority;
             }
         };
-        PriorityQueue<Point> looking_at = new PriorityQueue<Point>(pointPriorityComparator);
-        looking_at.add(start);
+        PriorityQueue<PointPriority> looking_at = new PriorityQueue<PointPriority>(pointPriorityComparator);
+        looking_at.add(new PointPriority(start,0));
 
         Map<Point, Point> parent = new HashMap<Point, Point>();
         parent.put(start,null);
-        Map<Point, Int> cost = new HashMap<Point, Int>();
+        Map<Point, Integer> cost = new HashMap<Point, Integer>();
         cost.put(start,0);
 
         while(looking_at.size() != 0)
         {
-            Point current = looking_at.poll();
+            Point current = looking_at.poll().point;
             
             // check if destination reached
             if(current.x == end.x && current.y == end.y)
@@ -108,14 +119,13 @@ public class AStar
             }
             for(Point new_point : world.neighbours(current))
             {
-                // int new_cost = cost[current] + 1;
+                int new_cost = cost.get(current) + 1;
                 if(!cost.containsKey(new_point) || (new_cost < cost.get(new_point)))
                 {
                     cost.put(new_point,new_cost);
 
                     int priority = new_cost + cartesian_distance(end,new_point);
-                    new_point.priority = priority;
-                    looking_at.add(new_point);
+                    looking_at.add(new PointPriority(new_point,priority));
                     parent.put(new_point,current);
                 }
             }
@@ -124,16 +134,22 @@ public class AStar
         ArrayList<Point> path = new ArrayList<Point>();
         path.add(end);
 
-        try{
-            while(point != start){
-                point = parent[point];
+        //try part here
+        boolean pathFound = true;
+        while(point != start)
+        {
+            if(!parent.containsKey(point))
+            {   
+                pathFound = false;
+                break;
+            }
+            else
+            {
+                point = parent.get(point);
                 path.add(point);
             }
-        } catch(Exception e){
-            System.out.println("Failed to find path!");
-            return path;
         }
-
+        pathFound = true;
 
         Collections.reverse(path);
         return path;
