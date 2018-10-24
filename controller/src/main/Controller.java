@@ -38,6 +38,9 @@ public class Controller
     Navigator nav;
 
     boolean connected = false;
+    boolean foundRed = false;
+    boolean foundBlue = false;
+    boolean foundGreen = false;
 
     String lastDisplayText = "";
 
@@ -127,6 +130,40 @@ public class Controller
         angle = gyroSensor.getAngle();
         gui.setMapAngle(angle);
         color = colorSensor.detectColor();
+        displaySensorInformation();
+        int iRobX = (int)(gui.getRobotX());
+        int iRobY = (int)(gui.getRobotY());
+        System.out.println(iRobX+","+iRobY);
+        switch(color){
+            case "RED":
+                if(!foundRed){
+                    foundRed = true;
+                    gui.addPerson(iRobX, iRobY, color);
+                }
+                break;
+            case "GREEN":
+                if(!foundGreen){
+                    foundGreen = true;
+                    gui.addPerson(iRobX, iRobY, color);
+                }
+                break;
+            case "BLUE":
+                if(!foundBlue){
+                    foundBlue = true;
+                    gui.addPerson(iRobX, iRobY, color);
+                }
+                break;
+            case "BORDER":
+                if((angle > 45 && angle < 135) || (angle > 225 && angle < 315)){
+                    gui.addLine(iRobX, iRobY+10, iRobX, iRobY-10);
+                } else {
+                    gui.addLine(iRobX+10, iRobY, iRobX-10, iRobY);
+                }
+                break;
+            default:
+                break;
+
+        }
         // Get reading from ultrasonic sensor and convert to centimetres
         distance = ultraSensor.getDistance() * 1000f;
         if(distance != Float.POSITIVE_INFINITY){
@@ -170,6 +207,9 @@ public class Controller
             gui.clearPoints();
             gui.setRobotPos(0, 0);
             gui.setMapAngle(0);
+            foundRed = false;
+            foundGreen = false;
+            foundBlue = false;
         }
     }
 }
