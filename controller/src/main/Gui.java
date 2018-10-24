@@ -59,6 +59,7 @@ Creates and contains all the viewable and interactable elements of the controlle
 */
 public class Gui extends JFrame{
     Controller controller;
+    Navigator nav;
     boolean connected = false;
 
     JPanel panel;
@@ -172,9 +173,10 @@ public class Gui extends JFrame{
         this.setVisible(true);
     }
 
-    // connect gui to controller
-    public void init(Controller c){
+    // connect gui and navigator to controller
+    public void init(Controller c, Navigator n){
         controller = c;
+        nav = n;
         setMapAngle(0);
     }
 
@@ -327,7 +329,7 @@ public class Gui extends JFrame{
                 graph2.drawLine(line.x1, line.y1, line.x2, line.y2);
             }
             for (Point point : points) {
-                graph2.drawOval(point.x, point.y, pointSize, pointSize);
+                graph2.drawRect(point.x, point.y, pointSize, pointSize);
             }
 
             double drawX = -halfArcWidth;

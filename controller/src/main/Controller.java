@@ -33,7 +33,10 @@ public class Controller
     ColorSensor colorSensor;
     GyroSensor gyroSensor;
     UltrasonicSensor ultraSensor;
+    
     Gui gui;
+    Navigator nav;
+
     boolean connected = false;
 
     String lastDisplayText = "";
@@ -44,15 +47,15 @@ public class Controller
 
     String color = "NONE";
 
-    public void init(Gui gui)
+    public void init(Gui gui, Navigator nav)
     {
         this.gui = gui;
+        this.nav = nav;
+
         motor = new Motor();
         colorSensor = new ColorSensor();
         gyroSensor = new GyroSensor();
         ultraSensor = new UltrasonicSensor();
-
-        //distances = new ArrayList<>();
     }
 
     public void connect() throws RemoteException, MalformedURLException, NotBoundException
@@ -143,7 +146,6 @@ public class Controller
             double robotX = -(Math.sin(theta) * robotDistance);
             gui.incRobotPos(robotX,robotY);
         }
-        displaySensorInformation();
     }
 
     public void displaySensorInformation()

@@ -24,10 +24,11 @@ public class Main
 
         //Construct the display
         Gui gui = new Gui();
+        Navigator nav = new Navigator(100, 10);
 
         //Connect the components together
-        gui.init(controller);
-        controller.init(gui);
+        gui.init(controller, nav);
+        controller.init(gui, nav);
 
     }
 }
