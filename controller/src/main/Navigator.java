@@ -16,18 +16,25 @@ public class Navigator{
     private List<Point> points = new ArrayList<Point>();
     private List<Point> recentPoints = new ArrayList<Point>();
 
+    ArrayList<AStar.Point> currentPath;
+
+    AStar.World world;
+
+    Gui gui;
+
     int gridSize;
     int halfGrid;
-    int[][] grid;
     double cellSize;
 
     // Values read within this distance will be clustered
     private final int MIN_DIST = 3;
     private final int MIN_DIST_SQUARED = (int)Math.pow(MIN_DIST, 2);
 
-    public Navigator(int gridSize, double cellSize){
+    public Navigator(Gui gui, int gridSize, double cellSize){
         // Starts in the bottom left corner of the grid
-        grid = new int[gridSize][gridSize];
+        this.gui = gui;
+        world = new AStar.World(gridSize, gridSize); 
+
         this.cellSize = cellSize;
         this.gridSize = gridSize;
         this.halfGrid = halfGrid;
@@ -48,22 +55,34 @@ public class Navigator{
         if(gridX < 0 || gridY < 0 || gridX > gridSize || gridY > gridSize){
             //Don't add point
         } else{
-            points.add(p);
-            grid[gridX][gridY] += 1;
+            /*
+            if(world.data[gridX][gridY] < world.SOLID_THRESHOLD){
+                points.add(p);
+            }*/
+            world.data[gridX][gridY] += 1;
         }
+    }
+
+    public void addDestination(int x, int y){
+        int[] d = pointToGrid(x, y);
+        int[] s = pointToGrid((int)gui.getRobotX()+gui.getMapWidth()/2, (int)gui.getRobotY()+gui.getMapHeight()/2);
+        
+        currentPath = AStar.astar(new AStar.Point(s[0], s[1]), new AStar.Point(d[0], d[1]), world);
     }
 
     public int[] pointToGrid(int x, int y){
         int gridX = x % gridSize;
         int gridY = y % gridSize;
 
-        // Add half the gridSize because robot is offset
-        gridX += halfGrid;
-        gridY += halfGrid;
-
         int[] gridCoords = {gridX, gridY};
 
         return gridCoords;
+    }
+
+    public int[] gridToPoint(int x, int y){
+        int[] coords = {x*gridSize, y*gridSize};
+
+        return coords;
     }
 
     public void clearPoints(){

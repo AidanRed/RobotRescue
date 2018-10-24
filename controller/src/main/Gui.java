@@ -40,6 +40,8 @@ import java.awt.Point;
 import java.awt.BasicStroke;
 
 import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -153,6 +155,21 @@ public class Gui extends JFrame{
 
                 mapArea = new Map();
                 panel.add(mapArea, BorderLayout.CENTER);
+                mapArea.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e){
+                        int theX = e.getX();
+                        int theY = e.getY();
+                        System.out.println("Adding destination at: (" + Integer.toString(theX) + ", " + Integer.toString(theY) +")");
+                        //nav.addDestination(theX, theY);
+                        repaint();
+                    }
+                    @Override
+                    public void mouseExited(MouseEvent e){}
+                    public void mouseEntered(MouseEvent e){}
+                    public void mouseReleased(MouseEvent e){}
+                    public void mousePressed(MouseEvent e){}
+                });
 
                 logArea = new JTextArea();
                 scrollPane = new JScrollPane(logArea);
@@ -312,7 +329,7 @@ public class Gui extends JFrame{
         }
         public void point(int x, int y){
             Point p = new Point(x, y);
-            points.add(p);
+            nav.addPoint(p);
             repaint();
         }
         public void line(int x1, int y1, int x2, int y2){
@@ -321,7 +338,7 @@ public class Gui extends JFrame{
             repaint();
         }
         public void clearP(){
-            points.clear();
+            nav.clearPoints();
             repaint();
         }
         public void clearL(){
@@ -354,7 +371,7 @@ public class Gui extends JFrame{
                 graph2.drawLine(line.x1, line.y1, line.x2, line.y2);
                 graph2.setStroke(new BasicStroke(1));
             }
-            for (Point point : points) {
+            for (Point point : nav.getPoints()) {
                 graph2.drawRect(point.x, point.y, pointSize, pointSize);
             }
             for (Person person : persons) {
@@ -392,6 +409,14 @@ public class Gui extends JFrame{
             graph2.draw(drawArc);
             graph2.rotate(Math.toRadians((angle)));
             graph2.translate(-(halfMapWidth + robotX), -(halfMapHeight + robotY));
+
+            if(nav.currentPath != null){
+                for(AStar.Point p : nav.currentPath){
+                    System.out.println("Point at: " + Integer.toString(p.x) + " " + Integer.toString(p.y));
+                    int[] coords = nav.gridToPoint(p.x, p.y);
+                    graph2.drawRect(coords[0] + halfMapWidth, coords[1] + halfMapWidth, (int)nav.cellSize, (int)nav.cellSize);
+                }
+            }
         }
 
         private class Line{
