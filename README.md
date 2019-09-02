@@ -1,11 +1,11 @@
 # Software Engineering & Project
 
-- Aidan Redding - a1706124
-- Abdul Mohsi Jawaid - a1692030
-- Martin Davis - a1706490
-- Trek Hopton - a1696375
-- Roland Croft - a1706489
-- Burrough Clarke - a1645126
+- Aidan Redding
+- Abdul Mohsi Jawaid
+- Martin
+- Trek
+- Roland
+- Burrough
 
 # Build Instructions:
 
